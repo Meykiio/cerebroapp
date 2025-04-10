@@ -1,6 +1,6 @@
 
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -12,6 +12,11 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/Tasks";
+import Calendar from "./pages/Calendar";
+import Metrics from "./pages/Metrics";
+import Notes from "./pages/Notes";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,11 +40,11 @@ const App = () => (
             {/* Dashboard routes */}
             <Route path="/" element={<AuthGuard><DashboardLayout /></AuthGuard>}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/tasks" element={<div className="py-10 text-center text-xl">Tasks Page - Coming Soon</div>} />
-              <Route path="/calendar" element={<div className="py-10 text-center text-xl">Calendar Page - Coming Soon</div>} />
-              <Route path="/metrics" element={<div className="py-10 text-center text-xl">Metrics Page - Coming Soon</div>} />
-              <Route path="/notes" element={<div className="py-10 text-center text-xl">Notes Page - Coming Soon</div>} />
-              <Route path="/settings" element={<div className="py-10 text-center text-xl">Settings Page - Coming Soon</div>} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/metrics" element={<Metrics />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
             
             {/* Catch-all route */}

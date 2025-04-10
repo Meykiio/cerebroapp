@@ -1,11 +1,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Brain, ChevronRight, Loader2, SendHorizonal, X } from "lucide-react";
+import { generateGeminiResponse, GeminiMessage } from "@/services/gemini";
 
 interface Message {
   id: string;
@@ -45,7 +45,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
     "How are my KPIs trending?",
   ];
 
-  const handleSend = (prompt?: string) => {
+  const handleSend = async (prompt?: string) => {
     const userMessage = prompt || input;
     if (!userMessage.trim()) return;
     
@@ -60,21 +60,16 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
     setInput("");
     setIsTyping(true);
     
-    // In a real implementation, this would call the Gemini API
-    // For now, let's simulate a response
-    setTimeout(() => {
-      // Mock responses based on question keywords
-      let response = "I'm still learning how to help with that.";
-      
-      if (userMessage.toLowerCase().includes("schedule") || userMessage.toLowerCase().includes("today")) {
-        response = "Your schedule today includes a team meeting at 10 AM, a client call at 2 PM, and time blocked for project work from 3-5 PM. You have 2 high-priority tasks due today.";
-      } else if (userMessage.toLowerCase().includes("prioritize") || userMessage.toLowerCase().includes("tasks")) {
-        response = "Based on your deadlines and calendar, I'd recommend focusing on these tasks today:\n1. Finish the client proposal (due tomorrow)\n2. Prepare for tomorrow's investor meeting\n3. Review the marketing analytics (lower priority but quick to complete)";
-      } else if (userMessage.toLowerCase().includes("summarize") || userMessage.toLowerCase().includes("week")) {
-        response = "This week you've completed 14 tasks (up 20% from last week), had 8 meetings (down 1 from last week), and your KPIs are showing positive trends in user growth (+5%) but customer acquisition costs increased slightly (+2%).";
-      } else if (userMessage.toLowerCase().includes("kpi") || userMessage.toLowerCase().includes("metrics")) {
-        response = "Your KPIs are trending mostly positive. Revenue is up 8% MoM, user retention increased by 3%, but customer acquisition costs rose by 5%. I've noticed your conversion rate declined slightly over the past 2 weeks. Would you like me to analyze potential causes?";
-      }
+    // Convert messages to Gemini format
+    const geminiMessages: GeminiMessage[] = [
+      {
+        role: "user",
+        parts: [{ text: `You are Cerebro AI, a helpful AI assistant for entrepreneurs. Respond concisely to: ${userMessage}` }],
+      },
+    ];
+    
+    try {
+      const response = await generateGeminiResponse(geminiMessages);
       
       const assistantMsg: Message = {
         id: Date.now().toString(),
@@ -84,8 +79,12 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
       };
       
       setMessages((prev) => [...prev, assistantMsg]);
+    } catch (error) {
+      console.error("Error getting assistant response:", error);
+      toast.error("Failed to get AI response");
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
