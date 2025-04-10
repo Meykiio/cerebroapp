@@ -24,14 +24,14 @@ interface Event {
   isReminder?: boolean;
 }
 
-// Sample event data
-const initialEvents = [
+// Sample event data - ensuring types match the interface exactly
+const initialEvents: Event[] = [
   {
     id: "1",
     title: "Team Meeting",
     date: new Date(2025, 3, 15, 10, 0),
     endDate: new Date(2025, 3, 15, 11, 30),
-    type: "meeting",
+    type: "meeting", // This is explicitly a literal type now
     color: "bg-cerebro-purple"
   },
   {
@@ -39,7 +39,7 @@ const initialEvents = [
     title: "Client Call",
     date: new Date(2025, 3, 15, 14, 0),
     endDate: new Date(2025, 3, 15, 15, 0),
-    type: "call",
+    type: "call", // This is explicitly a literal type now
     color: "bg-cerebro-cyan"
   },
   {
@@ -47,14 +47,14 @@ const initialEvents = [
     title: "Project Review",
     date: new Date(2025, 3, 16, 9, 0),
     endDate: new Date(2025, 3, 16, 10, 0),
-    type: "meeting",
+    type: "meeting", // This is explicitly a literal type now
     color: "bg-cerebro-purple"
   },
   {
     id: "4",
     title: "Deadline: Marketing Campaign",
     date: new Date(2025, 3, 18, 18, 0),
-    type: "deadline",
+    type: "deadline", // This is explicitly a literal type now
     color: "bg-red-500",
     isReminder: true
   },
@@ -67,8 +67,15 @@ const CalendarPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   
-  // Form state
-  const [newEvent, setNewEvent] = useState({
+  // Form state - now with correct typing for 'type'
+  const [newEvent, setNewEvent] = useState<{
+    title: string;
+    date: Date;
+    endDate: Date;
+    type: "meeting" | "call" | "deadline" | "reminder";
+    description: string;
+    isReminder: boolean;
+  }>({
     title: "",
     date: new Date(),
     endDate: new Date(),
@@ -122,8 +129,8 @@ const CalendarPage = () => {
     setNewEvent(prev => ({ ...prev, isReminder: checked }));
   };
 
-  // Handle event type change
-  const handleTypeChange = (value: string) => {
+  // Handle event type change - now properly typed
+  const handleTypeChange = (value: "meeting" | "call" | "deadline" | "reminder") => {
     setNewEvent(prev => ({ ...prev, type: value }));
   };
 
@@ -147,7 +154,7 @@ const CalendarPage = () => {
       title: newEvent.title,
       date: newEvent.date,
       endDate: newEvent.isReminder ? undefined : newEvent.endDate,
-      type: newEvent.type as "meeting" | "call" | "deadline" | "reminder",
+      type: newEvent.type,
       color: eventColor,
       description: newEvent.description,
       isReminder: newEvent.isReminder
@@ -268,7 +275,10 @@ const CalendarPage = () => {
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="space-y-2 flex-1">
                       <Label htmlFor="type">Event Type</Label>
-                      <Select defaultValue={newEvent.type} onValueChange={handleTypeChange}>
+                      <Select 
+                        defaultValue={newEvent.type} 
+                        onValueChange={(value: string) => handleTypeChange(value as "meeting" | "call" | "deadline" | "reminder")}
+                      >
                         <SelectTrigger className="bg-gray-800/50 border-white/10">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
