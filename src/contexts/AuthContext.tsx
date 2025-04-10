@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -34,7 +33,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
-  // Check for stored auth on initial load
   useEffect(() => {
     const storedUser = localStorage.getItem("cerebroUser");
     if (storedUser) {
@@ -43,16 +41,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  // Mock login function - would connect to Firebase in production
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // This is a mock implementation - replace with actual Firebase Auth
       if (email && password) {
-        // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // For demo, create a mock user
         const mockUser = {
           id: "user-" + Math.random().toString(36).substring(2, 9),
           email,
@@ -74,16 +68,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Mock signup function
   const signup = async (email: string, password: string, name: string) => {
     try {
       setLoading(true);
-      // This is a mock implementation - replace with actual Firebase Auth
       if (email && password) {
-        // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // For demo, create a mock user
         const mockUser = {
           id: "user-" + Math.random().toString(36).substring(2, 9),
           email,
