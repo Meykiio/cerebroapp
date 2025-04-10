@@ -64,7 +64,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
     const geminiMessages: GeminiMessage[] = [
       {
         role: "user",
-        parts: [{ text: `You are Cerebro AI, a helpful AI assistant for entrepreneurs. Respond concisely to: ${userMessage}` }],
+        parts: [{ text: userMessage }],
       },
     ];
     
