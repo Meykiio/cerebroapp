@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,9 +9,11 @@ import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getNotes, createNote, deleteNote, Note } from "@/services/notesService";
 import { analyzeNote } from "@/services/geminiService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NotesPage = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -73,7 +74,7 @@ const NotesPage = () => {
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim() || !user) return;
 
     // Extract hashtags from content
     const hashtagRegex = /#(\w+)/g;
@@ -85,7 +86,8 @@ const NotesPage = () => {
     createNoteMutation.mutate({
       title,
       content,
-      tags
+      tags,
+      user_id: user.id  // Add the user_id here
     });
   };
 
@@ -176,7 +178,7 @@ const NotesPage = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-cerebro-purple hover:bg-cerebro-purple-dark"
-                disabled={createNoteMutation.isPending || !title.trim()}
+                disabled={createNoteMutation.isPending || !title.trim() || !user}
               >
                 {createNoteMutation.isPending ? (
                   <span className="flex items-center">

@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Note {
   id: string;
@@ -26,7 +27,7 @@ export const getNotes = async () => {
 export const createNote = async (note: Omit<Note, "id" | "created_at">) => {
   const { data, error } = await supabase
     .from("notes")
-    .insert([note])
+    .insert(note)
     .select()
     .single();
 

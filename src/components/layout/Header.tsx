@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { BellIcon, Brain, LogOut, Menu, Moon, Search, Settings, User2 } from "lucide-react";
+import NotificationsDropdown from "./NotificationsDropdown";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -14,6 +15,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
   const { user, profile, logout } = useAuth();
   const [date, setDate] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Update date every minute
   useEffect(() => {
@@ -28,6 +30,15 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
       day: 'numeric'
     };
     return date.toLocaleDateString('en-US', options);
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    
+    // Implement search functionality
+    console.log("Searching for:", searchQuery);
+    // This would typically query your database or filter content
   };
   
   return (
@@ -50,14 +61,16 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
         
         <div className="flex items-center gap-2">
           {/* Search */}
-          <div className="hidden md:flex items-center gap-2 bg-white/5 rounded-lg px-3 py-1.5">
+          <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 bg-white/5 rounded-lg px-3 py-1.5">
             <Search size={16} className="text-cerebro-soft/60" />
             <input 
               type="text" 
               placeholder="Search..." 
               className="bg-transparent outline-none border-none text-sm text-cerebro-soft placeholder:text-cerebro-soft/60 w-48"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
             />
-          </div>
+          </form>
           
           {/* Assistant button */}
           <Button
@@ -71,14 +84,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
           </Button>
           
           {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-cerebro-soft hover:text-white hover:bg-white/10 relative"
-          >
-            <BellIcon size={20} />
-            <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-cerebro-cyan"></span>
-          </Button>
+          <NotificationsDropdown />
           
           {/* User menu */}
           <DropdownMenu>

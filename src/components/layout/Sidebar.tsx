@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,21 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const location = useLocation();
   const { user, profile } = useAuth();
+  
+  // Add localStorage to remember sidebar state
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-open");
+    if (savedState !== null) {
+      setOpen(savedState === "true");
+    }
+  }, []);
+
+  // Save sidebar state to localStorage
+  const toggleSidebar = () => {
+    const newState = !open;
+    setOpen(newState);
+    localStorage.setItem("sidebar-open", String(newState));
+  };
   
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: <Home size={20} /> },
@@ -78,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
             </div>
             <div>
               <p className="font-medium text-cerebro-soft">{profile?.name || "User"}</p>
-              <p className="text-sm text-cerebro-soft/60">{profile?.businessName || "My Business"}</p>
+              <p className="text-sm text-cerebro-soft/60">{profile?.business_name || "My Business"}</p>
             </div>
           </div>
         </div>
@@ -107,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
         <div className="hidden lg:block p-4 border-t border-white/10">
           <Button
             variant="ghost"
-            onClick={() => setOpen(!open)}
+            onClick={toggleSidebar}
             className="w-full justify-center text-cerebro-soft hover:text-white hover:bg-white/5"
           >
             {open ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}

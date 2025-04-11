@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getEvents, createEvent, deleteEvent } from "@/services/calendarService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CalendarPage = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<string>("week");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -136,6 +137,11 @@ const CalendarPage = () => {
 
   // Add new event
   const handleAddEvent = () => {
+    if (!user) {
+      toast.error("You must be logged in to create events");
+      return;
+    }
+    
     const eventColor = 
       newEvent.type === "meeting" ? "bg-cerebro-purple" :
       newEvent.type === "call" ? "bg-cerebro-cyan" :
@@ -149,7 +155,8 @@ const CalendarPage = () => {
       type: newEvent.type,
       color: eventColor,
       is_reminder: newEvent.isReminder,
-      description: newEvent.description
+      description: newEvent.description,
+      user_id: user.id // Add the user_id here
     });
   };
 

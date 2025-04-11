@@ -28,7 +28,7 @@ export const getTasks = async () => {
 export const createTask = async (task: Omit<Task, "id" | "created_at">) => {
   const { data, error } = await supabase
     .from("tasks")
-    .insert([task])
+    .insert(task)
     .select()
     .single();
 
