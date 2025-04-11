@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -21,6 +20,9 @@ const Tasks = () => {
   const { user, profile } = useAuth();
   const queryClient = useQueryClient();
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("medium");
+  const [newTaskTags, setNewTaskTags] = useState("");
+  const [isAddingTask, setIsAddingTask] = useState(false);
   
   // Task queries
   const { data: tasks = [], isLoading } = useQuery({
@@ -63,17 +65,30 @@ const Tasks = () => {
     }
   });
   
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddTask = async () => {
     if (!newTaskTitle.trim() || !user) return;
     
-    createTaskMutation.mutate({
-      title: newTaskTitle,
-      completed: false,
-      priority: "medium",
-      tags: [],
-      user_id: user.id
-    });
+    setIsAddingTask(true);
+    
+    try {
+      await createTask({
+        title: newTaskTitle,
+        completed: false,
+        priority: newTaskPriority as string,
+        tags: newTaskTags?.split(",").map(tag => tag.trim()).filter(tag => tag !== "") || [],
+        user_id: user.id,
+        updated_at: new Date().toISOString()
+      });
+      
+      setNewTaskTitle("");
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      toast.success("Task added successfully");
+    } catch (error) {
+      console.error("Error adding task:", error);
+      toast.error("Failed to add task");
+    } finally {
+      setIsAddingTask(false);
+    }
   };
   
   const handleToggleComplete = (task: Task) => {

@@ -90,6 +90,22 @@
     @apply grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
   }
 
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animation-delay-450 {
+    animation-delay: 450ms;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+
   .animate-float {
     animation: float 5s ease-in-out infinite;
   }
@@ -101,5 +117,71 @@
     50% {
       transform: translateY(-10px);
     }
+  }
+  
+  /* Add more animation keyframes */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scale-in {
+    0% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-in-right {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  /* Background pattern */
+  .bg-neural-pattern {
+    background-image: 
+      radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.05) 2px, transparent 0),
+      radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2px, transparent 0);
+    background-size: 100px 100px;
+  }
+  
+  /* Animation classes */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+  }
+  
+  .animate-slide-in-right {
+    animation: slide-in-right 0.4s ease-out forwards;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }

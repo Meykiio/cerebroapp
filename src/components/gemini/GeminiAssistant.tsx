@@ -5,7 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Brain, ChevronRight, Loader2, SendHorizonal, X } from "lucide-react";
-import { generateGeminiResponse, GeminiMessage } from "@/services/gemini";
+import { generateGeminiResponse, GeminiMessage, detectIntentAndExecute } from "@/services/gemini";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
   id: string;
@@ -23,7 +24,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "Hi! I'm your Cerebro AI assistant. I can help you manage tasks, analyze your calendar, track KPIs, and more. How can I assist you today?",
+      content: "Hi! I'm your Cerebro AI assistant. I can help you manage tasks, analyze your calendar, track KPIs, and more. I can also create tasks, notes and calendar events for you. Just tell me what you need! How can I assist you today?",
       role: "assistant",
       timestamp: new Date(),
     },
@@ -32,6 +33,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { user } = useAuth();
   
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -42,13 +44,13 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
   const quickPrompts = [
     "What's on my schedule today?",
     "Help me prioritize my tasks",
-    "Summarize my week",
-    "How are my KPIs trending?",
+    "Add a task to review proposals by Friday",
+    "Create a note about marketing ideas",
   ];
 
   const handleSend = async (prompt?: string) => {
     const userMessage = prompt || input;
-    if (!userMessage.trim()) return;
+    if (!userMessage.trim() || !user) return;
     
     // Add user message
     const userMsg: Message = {
@@ -61,16 +63,9 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
     setInput("");
     setIsTyping(true);
     
-    // Convert messages to Gemini format
-    const geminiMessages: GeminiMessage[] = [
-      {
-        role: "user",
-        parts: [{ text: userMessage }],
-      },
-    ];
-    
     try {
-      const response = await generateGeminiResponse(geminiMessages);
+      // First check if this is an intent to create something
+      const response = await detectIntentAndExecute(userMessage, user.id);
       
       const assistantMsg: Message = {
         id: Date.now().toString(),
@@ -185,7 +180,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
               data-gemini-input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything..."
+              placeholder="Ask me anything or create tasks..."
               className="min-h-10 resize-none bg-gray-800/50 border-white/10 text-cerebro-soft placeholder:text-cerebro-soft/60"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
