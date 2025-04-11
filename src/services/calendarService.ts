@@ -7,11 +7,12 @@ export interface CalendarEvent {
   description?: string;
   start_date: string;
   end_date?: string;
-  type: "meeting" | "call" | "deadline" | "reminder";
+  type: string; // Changed from strict union type to string to match database
   color: string;
   is_reminder: boolean;
   created_at: string;
   user_id: string;
+  updated_at: string;
 }
 
 export const getEvents = async () => {

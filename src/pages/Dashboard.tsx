@@ -25,15 +25,31 @@ const Dashboard = () => {
       duration: 3000,
     });
     
-    // Reset the input after sending
-    setGeminiQuery("");
+    // Find Gemini assistant component and open it
+    const geminiAssistant = document.querySelector('[data-gemini-toggle]');
+    if (geminiAssistant) {
+      // @ts-ignore
+      geminiAssistant.click();
+    }
     
-    // This would normally connect to a real Gemini API
+    // Find the Gemini input field and enter the query
     setTimeout(() => {
-      toast.success("Gemini has processed your query", {
-        description: "Check the assistant panel for the full response",
-      });
-    }, 2000);
+      const geminiTextarea = document.querySelector('[data-gemini-input]');
+      if (geminiTextarea) {
+        // @ts-ignore
+        geminiTextarea.value = geminiQuery;
+        
+        // Find the send button and click it
+        const sendButton = document.querySelector('[data-gemini-send]');
+        if (sendButton) {
+          // @ts-ignore
+          sendButton.click();
+        }
+      }
+      
+      // Reset the input after sending
+      setGeminiQuery("");
+    }, 500);
   }
   
   return (

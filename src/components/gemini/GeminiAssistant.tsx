@@ -31,6 +31,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -113,6 +114,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
           <Button
             variant="ghost"
             size="icon"
+            data-gemini-toggle
             onClick={() => setOpen(false)}
             className="text-cerebro-soft hover:text-white hover:bg-white/10"
           >
@@ -179,6 +181,8 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
             }}
           >
             <Textarea
+              ref={inputRef}
+              data-gemini-input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask me anything..."
@@ -193,6 +197,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
             <Button
               type="submit"
               size="icon"
+              data-gemini-send
               disabled={isTyping || !input.trim()}
               className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
             >

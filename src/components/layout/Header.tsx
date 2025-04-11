@@ -1,10 +1,10 @@
 
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { ChevronDown, Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { BellIcon, Brain, LogOut, Menu, Moon, Search, Settings, User2 } from "lucide-react";
 import NotificationsDropdown from "./NotificationsDropdown";
 
 interface HeaderProps {
@@ -13,107 +13,111 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
-  const { user, profile, logout } = useAuth();
-  const [date, setDate] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState("");
+  const { user, profile, signOut } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
-  // Update date every minute
-  useEffect(() => {
-    const timer = setInterval(() => setDate(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatDate = () => {
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    };
-    return date.toLocaleDateString('en-US', options);
+  const handleAvatarClick = () => {
+    setShowUserMenu(!showUserMenu);
   };
-
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    
-    // Implement search functionality
-    console.log("Searching for:", searchQuery);
-    // This would typically query your database or filter content
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
+  };
+  
+  // Get user initials for avatar fallback
+  const getUserInitials = (): string => {
+    if (!profile?.name) return "U";
+    return profile.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
   };
   
   return (
-    <header className="bg-gray-900/90 backdrop-blur-md border-b border-white/10 py-3 px-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="lg:hidden text-cerebro-soft hover:text-white hover:bg-white/10"
-          >
-            <Menu size={20} />
-          </Button>
-          
-          <div className="hidden md:block">
-            <h1 className="text-lg font-semibold text-cerebro-soft">{formatDate()}</h1>
-          </div>
-        </div>
+    <header className="bg-gray-900/80 border-b border-white/10 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
+      {/* Left section - Mobile Menu Toggle and Page Title */}
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden mr-2"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
         
-        <div className="flex items-center gap-2">
-          {/* Search */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 bg-white/5 rounded-lg px-3 py-1.5">
-            <Search size={16} className="text-cerebro-soft/60" />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className="bg-transparent outline-none border-none text-sm text-cerebro-soft placeholder:text-cerebro-soft/60 w-48"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-          </form>
-          
-          {/* Assistant button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleAssistant}
-            className="text-cerebro-soft relative hover:text-cerebro-purple hover:bg-white/10"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:flex mr-2"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        
+        <h1 className="text-lg font-medium">Cerebro</h1>
+        <div className="bg-cerebro-purple/20 text-cerebro-purple text-xs rounded-md px-2 py-0.5 ml-2">
+          Beta
+        </div>
+      </div>
+      
+      {/* Right section - Actions and User Menu */}
+      <div className="flex items-center space-x-2">
+        {/* AI Assistant Button */}
+        <Button 
+          variant="outline"
+          data-gemini-toggle
+          className="hidden sm:flex border-white/10"
+          onClick={toggleAssistant}
+        >
+          <Sparkles className="mr-2 h-4 w-4 text-cerebro-purple" />
+          <span>AI Assistant</span>
+        </Button>
+        
+        {/* Notifications */}
+        <NotificationsDropdown className="hidden sm:block" />
+        
+        {/* User Menu */}
+        <div className="relative">
+          <div 
+            className="flex items-center cursor-pointer"
+            onClick={handleAvatarClick}
           >
-            <Brain size={20} />
-            <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-cerebro-cyan animate-pulse"></span>
-          </Button>
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.user_metadata?.avatar_url} />
+              <AvatarFallback className="bg-cerebro-purple/30 text-cerebro-purple">
+                {getUserInitials()}
+              </AvatarFallback>
+            </Avatar>
+            <ChevronDown className="ml-1 h-4 w-4 text-cerebro-soft/70" />
+          </div>
           
-          {/* Notifications */}
-          <NotificationsDropdown />
-          
-          {/* User menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8 bg-cerebro-purple">
-                  <AvatarFallback>{profile?.name?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-white/10 text-cerebro-soft">
-              <div className="p-2 border-b border-white/10">
-                <p className="font-semibold">{profile?.name || "User"}</p>
-                <p className="text-sm text-cerebro-soft/70">{user?.email}</p>
+          {/* User Dropdown */}
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-64 bg-gray-900 border border-white/10 rounded-md shadow-lg z-50">
+              <div className="p-3 border-b border-white/10">
+                <p className="font-semibold">{profile?.name}</p>
+                <p className="text-sm text-cerebro-soft/70 truncate">{user?.email}</p>
               </div>
-              <DropdownMenuItem className="cursor-pointer hover:bg-white/5">
-                <User2 className="mr-2 h-4 w-4" /> Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-white/5">
-                <Settings className="mr-2 h-4 w-4" /> Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-white/5">
-                <Moon className="mr-2 h-4 w-4" /> Theme
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-400 hover:bg-white/5 hover:text-red-400">
-                <LogOut className="mr-2 h-4 w-4" /> Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <div className="p-2">
+                <Button 
+                  variant="ghost"
+                  className="w-full justify-start text-left text-red-400 hover:text-red-300 hover:bg-red-950/30"
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
