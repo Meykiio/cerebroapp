@@ -7,66 +7,94 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StickyNote, PlusCircle, Search, Brain, Tag, Calendar, Trash2, Mic } from "lucide-react";
 import { toast } from "sonner";
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: Date;
-  tags: string[];
-}
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getNotes, createNote, deleteNote, Note } from "@/services/notesService";
+import { analyzeNote } from "@/services/geminiService";
 
 const NotesPage = () => {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: "1",
-      title: "Business Ideas 2025",
-      content: "1. Create a mobile app for freelance project management\n2. Develop a productivity dashboard for entrepreneurs\n3. Research AI-powered content creation tools",
-      createdAt: new Date(),
-      tags: ["ideas", "business", "projects"]
-    },
-    {
-      id: "2",
-      title: "Meeting Notes - Investor Call",
-      content: "- Discussed funding options for Q3\n- Shared latest user growth metrics\n- Need to prepare financial projections\n- Follow up with Sarah about term sheet",
-      createdAt: new Date(Date.now() - 86400000),
-      tags: ["meeting", "investor"]
-    },
-    {
-      id: "3",
-      title: "Marketing Strategy",
-      content: "Content plan for next quarter:\n- Blog posts: 2x per week\n- Social media: daily posts\n- Email newsletter: weekly\n- Podcast guest appearances: 1x per month",
-      createdAt: new Date(Date.now() - 172800000),
-      tags: ["marketing", "planning"]
-    }
-  ]);
-
+  const queryClient = useQueryClient();
+  
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  
+  // Fetch notes
+  const { data: notes = [], isLoading } = useQuery({
+    queryKey: ['notes'],
+    queryFn: getNotes
+  });
+  
+  // Create note mutation
+  const createNoteMutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success("Note added successfully");
+      setTitle("");
+      setContent("");
+    },
+    onError: (error) => {
+      toast.error(`Failed to add note: ${error.message}`);
+    }
+  });
+
+  // Delete note mutation
+  const deleteNoteMutation = useMutation({
+    mutationFn: deleteNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast.success("Note deleted");
+      if (selectedNoteId === null) {
+        setAnalyzedNote(null);
+      }
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete note: ${error.message}`);
+    }
+  });
+  
+  // Note analysis
+  const [analyzedNote, setAnalyzedNote] = useState<{
+    summary: string;
+    suggestedTasks: string[];
+  } | null>(null);
+  
+  const analyzeNoteMutation = useMutation({
+    mutationFn: (content: string) => analyzeNote(content),
+    onSuccess: (data) => {
+      setAnalyzedNote(data);
+    },
+    onError: (error) => {
+      toast.error(`Analysis failed: ${error.message}`);
+    }
+  });
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const newNote: Note = {
-      id: Date.now().toString(),
+    // Extract hashtags from content
+    const hashtagRegex = /#(\w+)/g;
+    const matches = content.match(hashtagRegex);
+    const tags = matches 
+      ? matches.map(tag => tag.substring(1).toLowerCase()) 
+      : [];
+
+    createNoteMutation.mutate({
       title,
       content,
-      createdAt: new Date(),
-      tags: []
-    };
-
-    setNotes([newNote, ...notes]);
-    setTitle("");
-    setContent("");
-    toast.success("Note added successfully");
+      tags
+    });
   };
 
   const handleDeleteNote = (id: string) => {
-    setNotes(notes.filter(note => note.id !== id));
-    toast.success("Note deleted");
+    deleteNoteMutation.mutate(id);
+    if (id === selectedNoteId) {
+      setSelectedNoteId(null);
+      setAnalyzedNote(null);
+    }
   };
 
   const toggleRecording = () => {
@@ -85,13 +113,9 @@ const NotesPage = () => {
     }
   };
 
-  const analyzedNote = {
-    summary: "This note contains business ideas focused on app development, productivity tools, and AI innovations. It appears to be brainstorming for future projects.",
-    suggestedTasks: [
-      "Research competition for freelance project management apps",
-      "Create mockups for productivity dashboard",
-      "Evaluate AI content creation tools in the market"
-    ]
+  const handleAnalyzeNote = (note: Note) => {
+    setSelectedNoteId(note.id);
+    analyzeNoteMutation.mutate(note.content);
   };
 
   // Filter notes based on search query
@@ -135,7 +159,7 @@ const NotesPage = () => {
               />
               <div className="relative">
                 <Textarea
-                  placeholder="Write your note..."
+                  placeholder="Write your note... (Use #hashtags to categorize)"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   className="min-h-[200px] bg-gray-800/50 border-white/10"
@@ -149,9 +173,25 @@ const NotesPage = () => {
                   <Mic size={16} />
                 </Button>
               </div>
-              <Button type="submit" className="w-full bg-cerebro-purple hover:bg-cerebro-purple-dark">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Save Note
+              <Button 
+                type="submit" 
+                className="w-full bg-cerebro-purple hover:bg-cerebro-purple-dark"
+                disabled={createNoteMutation.isPending || !title.trim()}
+              >
+                {createNoteMutation.isPending ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Save Note
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
@@ -175,10 +215,20 @@ const NotesPage = () => {
             </Tabs>
           </CardHeader>
           <CardContent>
-            {filteredNotes.length === 0 ? (
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-4 rounded-lg bg-gray-800/30 border border-white/5 animate-pulse">
+                    <div className="h-4 w-3/4 bg-white/10 rounded mb-3"></div>
+                    <div className="h-3 w-full bg-white/5 rounded mb-2"></div>
+                    <div className="h-3 w-5/6 bg-white/5 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredNotes.length === 0 ? (
               <div className="text-center py-10 text-cerebro-soft/50">
                 <StickyNote className="mx-auto h-12 w-12 opacity-20 mb-2" />
-                <p>No notes found</p>
+                <p>{searchQuery ? "No notes found matching your search" : "No notes yet"}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -186,14 +236,25 @@ const NotesPage = () => {
                   <div key={note.id} className="p-4 rounded-lg bg-gray-800/30 border border-white/5">
                     <div className="flex justify-between items-start">
                       <h3 className="text-lg font-medium">{note.title}</h3>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteNote(note.id)}
-                        className="text-cerebro-soft/50 hover:text-red-400 hover:bg-transparent"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleAnalyzeNote(note)}
+                          className="text-cerebro-soft/50 hover:text-cerebro-purple hover:bg-transparent"
+                        >
+                          <Brain className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteNote(note.id)}
+                          className="text-cerebro-soft/50 hover:text-red-400 hover:bg-transparent"
+                          disabled={deleteNoteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-cerebro-soft/80 mt-2 whitespace-pre-line text-sm">
                       {note.content.length > 150 ? `${note.content.substring(0, 150)}...` : note.content}
@@ -209,7 +270,7 @@ const NotesPage = () => {
                       </div>
                       <div className="flex items-center text-xs text-cerebro-soft/50">
                         <Calendar className="mr-1 h-3 w-3" />
-                        {note.createdAt.toLocaleDateString()}
+                        {new Date(note.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
@@ -221,7 +282,7 @@ const NotesPage = () => {
       </div>
 
       {/* AI Analysis */}
-      {notes.length > 0 && (
+      {selectedNoteId && analyzedNote && (
         <Card className="bg-gray-900/60 border-white/10">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -230,25 +291,37 @@ const NotesPage = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="text-sm font-medium text-cerebro-soft/70 mb-2">Summary</h4>
-                <p className="text-sm">{analyzedNote.summary}</p>
+            {analyzeNoteMutation.isPending ? (
+              <div className="flex justify-center py-8">
+                <div className="flex flex-col items-center">
+                  <svg className="animate-spin h-8 w-8 text-cerebro-purple mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p className="text-sm text-cerebro-soft/70">Analyzing note content...</p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-sm font-medium text-cerebro-soft/70 mb-2">Suggested Tasks</h4>
-                <ul className="space-y-2">
-                  {analyzedNote.suggestedTasks.map((task, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm">
-                      <div className="h-5 w-5 rounded-full bg-cerebro-purple/20 flex items-center justify-center text-xs text-cerebro-purple">
-                        {index + 1}
-                      </div>
-                      {task}
-                    </li>
-                  ))}
-                </ul>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-cerebro-soft/70 mb-2">Summary</h4>
+                  <p className="text-sm">{analyzedNote.summary}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-cerebro-soft/70 mb-2">Suggested Tasks</h4>
+                  <ul className="space-y-2">
+                    {analyzedNote.suggestedTasks.map((task, index) => (
+                      <li key={index} className="flex items-center gap-2 text-sm">
+                        <div className="h-5 w-5 rounded-full bg-cerebro-purple/20 flex items-center justify-center text-xs text-cerebro-purple">
+                          {index + 1}
+                        </div>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}

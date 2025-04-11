@@ -1,117 +1,105 @@
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ClipboardList, Plus } from "lucide-react";
+import { CheckCircle2, Circle, ListTodo } from "lucide-react";
 import WidgetWrapper from "./WidgetWrapper";
-
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-  priority: "low" | "medium" | "high";
-  dueDate?: Date;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getTasks } from "@/services/tasksService";
 
 const TasksWidget = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: "1", title: "Prepare investor presentation", completed: false, priority: "high" },
-    { id: "2", title: "Review marketing analytics", completed: false, priority: "medium" },
-    { id: "3", title: "Schedule team meeting", completed: true, priority: "low" },
-    { id: "4", title: "Update financial projections", completed: false, priority: "high" },
-  ]);
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ['tasks-widget'],
+    queryFn: () => getTasks().then(data => data.slice(0, 5)), // Only get top 5 tasks
+  });
+
+  const activeTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed);
   
-  const [newTask, setNewTask] = useState("");
-  
-  const handleAddTask = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTask.trim()) return;
-    
-    const task: Task = {
-      id: Date.now().toString(),
-      title: newTask,
-      completed: false,
-      priority: "medium",
-    };
-    
-    setTasks([...tasks, task]);
-    setNewTask("");
-  };
-  
-  const toggleTaskCompletion = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-  
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-500/20 border-red-500/30";
-      case "medium":
-        return "bg-yellow-500/20 border-yellow-500/30";
-      case "low":
-        return "bg-green-500/20 border-green-500/30";
-      default:
-        return "bg-gray-500/20 border-gray-500/30";
-    }
-  };
+  const completionRate = tasks.length > 0 
+    ? Math.round((completedTasks.length / tasks.length) * 100) 
+    : 0;
 
   return (
-    <WidgetWrapper title="Tasks" icon={<ClipboardList className="h-5 w-5 text-cerebro-purple" />}>
-      <div className="space-y-3">
-        {/* Task list */}
-        <div className="space-y-2 max-h-[250px] overflow-y-auto scrollbar-hidden">
-          {tasks.filter(task => !task.completed).slice(0, 4).map((task) => (
-            <div
-              key={task.id}
-              className="flex items-center gap-2 p-2 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <Checkbox
-                checked={task.completed}
-                onCheckedChange={() => toggleTaskCompletion(task.id)}
-              />
-              <span className={task.completed ? "line-through text-cerebro-soft/50" : ""}>
-                {task.title}
-              </span>
-              <div className={`ml-auto px-2 py-0.5 text-xs rounded border ${getPriorityColor(task.priority)}`}>
-                {task.priority}
-              </div>
+    <WidgetWrapper title="Tasks" icon={<ListTodo className="h-5 w-5 text-cerebro-purple" />}>
+      {isLoading ? (
+        <div className="space-y-2 animate-pulse">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded-full bg-white/10"></div>
+              <div className="h-4 flex-1 rounded bg-white/10"></div>
             </div>
           ))}
         </div>
-        
-        {/* Quick add task */}
-        <form onSubmit={handleAddTask} className="flex gap-2">
-          <Input
-            placeholder="Add a new task..."
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            className="bg-gray-800/50 border-white/10"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!newTask.trim()}
-            className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
-          >
-            <Plus size={16} />
-          </Button>
-        </form>
-        
-        <Link to="/tasks">
-          <Button 
-            variant="ghost" 
-            className="w-full mt-2 text-cerebro-soft hover:text-white hover:bg-white/10"
-          >
-            View All Tasks
-          </Button>
-        </Link>
-      </div>
+      ) : tasks.length === 0 ? (
+        <div className="text-center py-5 text-cerebro-soft/70">
+          <ListTodo className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <p>No tasks yet</p>
+          <Link to="/tasks">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="mt-2 text-cerebro-soft hover:text-white hover:bg-white/10"
+            >
+              Add your first task
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-2 mb-3">
+            {activeTasks.slice(0, 3).map(task => (
+              <div key={task.id} className="flex items-center gap-2">
+                <Circle className="h-4 w-4 text-cerebro-soft/60" />
+                <span className="text-sm">{task.title}</span>
+              </div>
+            ))}
+            {activeTasks.length === 0 && (
+              <div className="text-sm text-cerebro-soft/70 text-center py-1">
+                All tasks completed!
+              </div>
+            )}
+          </div>
+          
+          <div className="text-xs text-cerebro-soft/70 mb-1 flex justify-between">
+            <span>Progress</span>
+            <span>{completionRate}% complete</span>
+          </div>
+          
+          <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden mb-3">
+            <div 
+              className="h-full bg-cerebro-purple rounded-full" 
+              style={{ width: `${completionRate}%` }}
+            ></div>
+          </div>
+          
+          <div className="text-xs text-cerebro-soft/70 mb-2">
+            Recently completed:
+          </div>
+          
+          <div className="space-y-2 mb-3">
+            {completedTasks.slice(0, 2).map(task => (
+              <div key={task.id} className="flex items-center gap-2 opacity-70">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span className="text-sm line-through">{task.title}</span>
+              </div>
+            ))}
+            {completedTasks.length === 0 && (
+              <div className="text-sm text-cerebro-soft/70 text-center py-1">
+                No completed tasks yet
+              </div>
+            )}
+          </div>
+          
+          <Link to="/tasks">
+            <Button 
+              variant="ghost" 
+              className="w-full mt-2 text-cerebro-soft hover:text-white hover:bg-white/10"
+            >
+              View All Tasks
+            </Button>
+          </Link>
+        </>
+      )}
     </WidgetWrapper>
   );
 };

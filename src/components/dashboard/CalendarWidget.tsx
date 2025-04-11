@@ -1,93 +1,102 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
 import WidgetWrapper from "./WidgetWrapper";
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  type: "meeting" | "task" | "reminder";
-}
+import { useQuery } from "@tanstack/react-query";
+import { getEvents } from "@/services/calendarService";
 
 const CalendarWidget = () => {
   const today = new Date();
-  const [events] = useState<CalendarEvent[]>([
-    {
-      id: "1",
-      title: "Team Standup",
-      start: new Date(today.setHours(9, 30)),
-      end: new Date(today.setHours(10, 0)),
-      type: "meeting",
-    },
-    {
-      id: "2",
-      title: "Client Call - XYZ Corp",
-      start: new Date(today.setHours(11, 0)),
-      end: new Date(today.setHours(12, 0)),
-      type: "meeting",
-    },
-    {
-      id: "3",
-      title: "Lunch Break",
-      start: new Date(today.setHours(12, 0)),
-      end: new Date(today.setHours(13, 0)),
-      type: "reminder",
-    },
-    {
-      id: "4",
-      title: "Complete Project Proposal",
-      start: new Date(today.setHours(14, 0)),
-      end: new Date(today.setHours(16, 0)),
-      type: "task",
-    },
-  ]);
   
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  // Format today's date
+  const formattedDate = today.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
+  // Fetch upcoming events
+  const { data: allEvents = [], isLoading } = useQuery({
+    queryKey: ['events-widget'],
+    queryFn: getEvents
+  });
   
-  const getEventTypeStyles = (type: string) => {
-    switch (type) {
-      case "meeting":
-        return "border-l-4 border-cerebro-cyan";
-      case "task":
-        return "border-l-4 border-cerebro-purple";
-      case "reminder":
-        return "border-l-4 border-yellow-500";
-      default:
-        return "border-l-4 border-gray-400";
-    }
-  };
+  // Filter and sort upcoming events
+  const upcomingEvents = allEvents
+    .filter(event => new Date(event.start_date) >= today)
+    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+    .slice(0, 3);
 
   return (
-    <WidgetWrapper title="Today's Calendar" icon={<Calendar className="h-5 w-5 text-cerebro-cyan" />}>
-      <div className="space-y-2 max-h-[250px] overflow-y-auto scrollbar-hidden">
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className={`flex flex-col p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors ${getEventTypeStyles(event.type)}`}
-          >
-            <div className="font-semibold">{event.title}</div>
-            <div className="flex items-center gap-1 text-sm text-cerebro-soft/70">
-              <Clock size={14} />
-              <span>
-                {formatTime(event.start)} - {formatTime(event.end)}
-              </span>
-            </div>
-          </div>
-        ))}
+    <WidgetWrapper title="Calendar" icon={<CalendarIcon className="h-5 w-5 text-cerebro-cyan" />}>
+      <div className="mb-3 bg-gray-800/50 rounded-lg p-3 text-center">
+        <div className="text-sm text-cerebro-soft/70">Today</div>
+        <div className="text-xl font-semibold mt-1">{formattedDate}</div>
       </div>
+      
+      <div className="text-sm font-medium mb-2">Upcoming Events</div>
+      
+      {isLoading ? (
+        <div className="space-y-2 animate-pulse">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-2 rounded-md bg-white/5">
+              <div className="h-4 w-3/4 bg-white/10 rounded mb-2"></div>
+              <div className="h-3 w-1/2 bg-white/10 rounded"></div>
+            </div>
+          ))}
+        </div>
+      ) : upcomingEvents.length === 0 ? (
+        <div className="text-center py-3 text-cerebro-soft/70">
+          <CalendarIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <p>No upcoming events</p>
+          <Link to="/calendar">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="mt-2 text-cerebro-soft hover:text-white hover:bg-white/10"
+            >
+              Add your first event
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-2 mb-3">
+          {upcomingEvents.map((event) => {
+            const eventDate = new Date(event.start_date);
+            const isToday = eventDate.toDateString() === today.toDateString();
+            
+            let borderColor;
+            switch (event.type) {
+              case "meeting": borderColor = "border-cerebro-purple"; break;
+              case "call": borderColor = "border-cerebro-cyan"; break;
+              case "deadline": borderColor = "border-red-500"; break;
+              default: borderColor = "border-yellow-500";
+            }
+            
+            return (
+              <div 
+                key={event.id}
+                className={`p-2 rounded-md bg-gray-800/30 border-l-2 ${borderColor}`}
+              >
+                <div className="font-medium text-sm">{event.title}</div>
+                <div className="text-xs text-cerebro-soft/70 flex items-center mt-1">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {isToday ? "Today, " : eventDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ", "}
+                  {eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       
       <Link to="/calendar">
         <Button 
           variant="ghost" 
-          className="w-full mt-4 text-cerebro-soft hover:text-white hover:bg-white/10"
+          className="w-full mt-2 text-cerebro-soft hover:text-white hover:bg-white/10"
         >
-          View Full Calendar
+          View Calendar
         </Button>
       </Link>
     </WidgetWrapper>

@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Brain } from "lucide-react";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -37,6 +38,10 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireAuth = true }) =
     return (
       <div className="flex h-screen items-center justify-center bg-cerebro-dark">
         <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 mb-4 animate-pulse">
+            <Brain size={40} className="text-cerebro-purple" />
+            <h1 className="text-4xl font-bold text-gradient">Cerebro</h1>
+          </div>
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-cerebro-purple border-t-transparent"></div>
           <p className="text-cerebro-soft">Loading...</p>
         </div>

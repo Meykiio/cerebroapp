@@ -11,63 +11,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-// Event interface
-interface Event {
-  id: string;
-  title: string;
-  date: Date;
-  endDate?: Date;
-  type: "meeting" | "call" | "deadline" | "reminder";
-  color: string;
-  description?: string;
-  isReminder?: boolean;
-}
-
-// Sample event data - ensuring types match the interface exactly
-const initialEvents: Event[] = [
-  {
-    id: "1",
-    title: "Team Meeting",
-    date: new Date(2025, 3, 15, 10, 0),
-    endDate: new Date(2025, 3, 15, 11, 30),
-    type: "meeting", // This is explicitly a literal type now
-    color: "bg-cerebro-purple"
-  },
-  {
-    id: "2",
-    title: "Client Call",
-    date: new Date(2025, 3, 15, 14, 0),
-    endDate: new Date(2025, 3, 15, 15, 0),
-    type: "call", // This is explicitly a literal type now
-    color: "bg-cerebro-cyan"
-  },
-  {
-    id: "3",
-    title: "Project Review",
-    date: new Date(2025, 3, 16, 9, 0),
-    endDate: new Date(2025, 3, 16, 10, 0),
-    type: "meeting", // This is explicitly a literal type now
-    color: "bg-cerebro-purple"
-  },
-  {
-    id: "4",
-    title: "Deadline: Marketing Campaign",
-    date: new Date(2025, 3, 18, 18, 0),
-    type: "deadline", // This is explicitly a literal type now
-    color: "bg-red-500",
-    isReminder: true
-  },
-];
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getEvents, createEvent, deleteEvent } from "@/services/calendarService";
 
 const CalendarPage = () => {
+  const queryClient = useQueryClient();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<string>("week");
-  const [events, setEvents] = useState<Event[]>(initialEvents);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
   
-  // Form state - now with correct typing for 'type'
+  // Form state
   const [newEvent, setNewEvent] = useState<{
     title: string;
     date: Date;
@@ -82,6 +35,46 @@ const CalendarPage = () => {
     type: "meeting",
     description: "",
     isReminder: false
+  });
+
+  // Fetch events
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ['events'],
+    queryFn: getEvents
+  });
+
+  // Create event mutation
+  const createEventMutation = useMutation({
+    mutationFn: createEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success("Event added successfully!");
+      setIsDialogOpen(false);
+      // Reset form
+      setNewEvent({
+        title: "",
+        date: new Date(),
+        endDate: new Date(),
+        type: "meeting",
+        description: "",
+        isReminder: false
+      });
+    },
+    onError: (error) => {
+      toast.error(`Failed to add event: ${error.message}`);
+    }
+  });
+
+  // Delete event mutation
+  const deleteEventMutation = useMutation({
+    mutationFn: deleteEvent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      toast.success("Event deleted successfully!");
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete event: ${error.message}`);
+    }
   });
 
   const currentMonthYear = date ? date.toLocaleString('default', { month: 'long', year: 'numeric' }) : '';
@@ -129,7 +122,7 @@ const CalendarPage = () => {
     setNewEvent(prev => ({ ...prev, isReminder: checked }));
   };
 
-  // Handle event type change - now properly typed
+  // Handle event type change
   const handleTypeChange = (value: "meeting" | "call" | "deadline" | "reminder") => {
     setNewEvent(prev => ({ ...prev, type: value }));
   };
@@ -149,41 +142,36 @@ const CalendarPage = () => {
       newEvent.type === "deadline" ? "bg-red-500" :
       "bg-yellow-500";
 
-    const newEventData: Event = {
-      id: Date.now().toString(),
+    createEventMutation.mutate({
       title: newEvent.title,
-      date: newEvent.date,
-      endDate: newEvent.isReminder ? undefined : newEvent.endDate,
+      start_date: newEvent.date.toISOString(),
+      end_date: newEvent.isReminder ? undefined : newEvent.endDate.toISOString(),
       type: newEvent.type,
       color: eventColor,
-      description: newEvent.description,
-      isReminder: newEvent.isReminder
-    };
-
-    setEvents(prev => [...prev, newEventData]);
-    
-    // Reset form and close dialog
-    setNewEvent({
-      title: "",
-      date: new Date(),
-      endDate: new Date(),
-      type: "meeting",
-      description: "",
-      isReminder: false
+      is_reminder: newEvent.isReminder,
+      description: newEvent.description
     });
-    
-    setIsDialogOpen(false);
-    toast.success("Event added successfully!");
   };
 
   // Delete event
   const handleDeleteEvent = (id: string) => {
-    setEvents(prev => prev.filter(event => event.id !== id));
-    toast.success("Event deleted successfully!");
+    deleteEventMutation.mutate(id);
   };
 
+  // Convert Supabase events to UI format
+  const uiEvents = events.map(event => ({
+    id: event.id,
+    title: event.title,
+    date: new Date(event.start_date),
+    endDate: event.end_date ? new Date(event.end_date) : undefined,
+    type: event.type,
+    color: event.color,
+    description: event.description,
+    isReminder: event.is_reminder
+  }));
+
   // Filter events for the selected date
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = uiEvents.filter(event => {
     if (!date) return false;
     return event.date.toDateString() === date.toDateString();
   }).sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -349,16 +337,38 @@ const CalendarPage = () => {
                   <Button 
                     onClick={handleAddEvent} 
                     className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
-                    disabled={!newEvent.title}
+                    disabled={!newEvent.title || createEventMutation.isPending}
                   >
-                    Add Event
+                    {createEventMutation.isPending ? (
+                      <span className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Adding...
+                      </span>
+                    ) : (
+                      "Add Event"
+                    )}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </CardHeader>
           <CardContent>
-            {filteredEvents.length === 0 ? (
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-start p-3 bg-gray-800/30 rounded-lg border-l-4 border-gray-700 animate-pulse">
+                    <div className="flex-1">
+                      <div className="h-5 w-3/4 bg-white/10 rounded mb-2"></div>
+                      <div className="h-4 w-1/3 bg-white/5 rounded mb-2"></div>
+                      <div className="h-3 w-1/4 bg-white/5 rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredEvents.length === 0 ? (
               <div className="text-center py-8 text-cerebro-soft/50">
                 <p>No events scheduled for this day</p>
               </div>
@@ -379,6 +389,7 @@ const CalendarPage = () => {
                           size="icon" 
                           onClick={() => handleDeleteEvent(event.id)} 
                           className="h-6 w-6 text-cerebro-soft/70 hover:text-red-400 hover:bg-transparent"
+                          disabled={deleteEventMutation.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
