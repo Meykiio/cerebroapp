@@ -11,6 +11,7 @@ export interface CalendarEvent {
   color: string;
   is_reminder: boolean;
   created_at: string;
+  user_id: string;
 }
 
 export const getEvents = async () => {

@@ -9,6 +9,7 @@ export interface Task {
   due_date?: string;
   tags: string[];
   created_at: string;
+  user_id: string;
 }
 
 export const getTasks = async () => {

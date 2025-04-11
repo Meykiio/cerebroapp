@@ -9,7 +9,7 @@ import KpiWidget from "@/components/dashboard/KpiWidget";
 import NotesWidget from "@/components/dashboard/NotesWidget";
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   
   return (
     <div className="space-y-6">
@@ -17,7 +17,7 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-cerebro-soft">
-            Welcome back, {user?.name?.split(" ")[0] || "User"}
+            Welcome back, {profile?.name?.split(" ")[0] || "User"}
           </h1>
           <p className="text-cerebro-soft/70">Here's an overview of your productivity</p>
         </div>

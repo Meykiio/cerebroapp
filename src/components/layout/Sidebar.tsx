@@ -24,7 +24,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: <Home size={20} /> },
@@ -73,12 +73,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-cerebro-purple flex items-center justify-center">
               <span className="text-white font-medium">
-                {user?.name?.charAt(0) || "U"}
+                {profile?.name?.charAt(0) || "U"}
               </span>
             </div>
             <div>
-              <p className="font-medium text-cerebro-soft">{user?.name || "User"}</p>
-              <p className="text-sm text-cerebro-soft/60">{user?.businessName || "My Business"}</p>
+              <p className="font-medium text-cerebro-soft">{profile?.name || "User"}</p>
+              <p className="text-sm text-cerebro-soft/60">{profile?.businessName || "My Business"}</p>
             </div>
           </div>
         </div>

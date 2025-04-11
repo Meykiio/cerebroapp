@@ -7,6 +7,7 @@ export interface Note {
   content: string;
   tags: string[];
   created_at: string;
+  user_id: string;
 }
 
 export const getNotes = async () => {

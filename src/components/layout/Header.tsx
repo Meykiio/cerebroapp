@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth();
   const [date, setDate] = useState(new Date());
   
   // Update date every minute
@@ -85,13 +85,13 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8 bg-cerebro-purple">
-                  <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                  <AvatarFallback>{profile?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-white/10 text-cerebro-soft">
               <div className="p-2 border-b border-white/10">
-                <p className="font-semibold">{user?.name}</p>
+                <p className="font-semibold">{profile?.name || "User"}</p>
                 <p className="text-sm text-cerebro-soft/70">{user?.email}</p>
               </div>
               <DropdownMenuItem className="cursor-pointer hover:bg-white/5">

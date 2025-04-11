@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,12 +19,12 @@ interface Notification {
 }
 
 const Settings = () => {
-  const { user, updateUserProfile } = useAuth();
+  const { user, profile, updateUserProfile } = useAuth();
   
-  const [profile, setProfile] = useState({
-    name: user?.name || "",
+  const [profileData, setProfileData] = useState({
+    name: profile?.name || "",
     email: user?.email || "",
-    businessName: user?.businessName || ""
+    businessName: profile?.businessName || ""
   });
 
   const [preferences, setPreferences] = useState({
@@ -37,7 +36,6 @@ const Settings = () => {
   
   const [showNotifications, setShowNotifications] = useState(false);
   
-  // Sample notifications
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
@@ -67,15 +65,15 @@ const Settings = () => {
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
+    setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await updateUserProfile({
-        name: profile.name,
-        businessName: profile.businessName
+        name: profileData.name,
+        businessName: profileData.businessName
       });
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -126,7 +124,6 @@ const Settings = () => {
           <p className="text-cerebro-soft/70">Manage your account and preferences</p>
         </div>
         
-        {/* Notifications panel toggle */}
         <div className="relative">
           <Button 
             variant="outline" 
@@ -142,7 +139,6 @@ const Settings = () => {
             )}
           </Button>
           
-          {/* Notifications dropdown */}
           {showNotifications && (
             <div className="absolute right-0 mt-2 w-80 bg-gray-900 border border-white/10 rounded-md shadow-lg z-50">
               <div className="p-3 border-b border-white/10 flex items-center justify-between">
@@ -243,7 +239,6 @@ const Settings = () => {
         </TabsList>
 
         <TabsContent value="account" className="mt-6 space-y-6">
-          {/* Profile Settings */}
           <Card className="bg-gray-900/60 border-white/10">
             <CardHeader>
               <h2 className="text-xl font-semibold">Profile Information</h2>
@@ -258,7 +253,7 @@ const Settings = () => {
                   <Input
                     id="name"
                     name="name"
-                    value={profile.name}
+                    value={profileData.name}
                     onChange={handleProfileChange}
                     className="bg-gray-800/50 border-white/10"
                   />
@@ -270,7 +265,7 @@ const Settings = () => {
                   <Input
                     id="email"
                     name="email"
-                    value={profile.email}
+                    value={profileData.email}
                     disabled
                     className="bg-gray-800/50 border-white/10 opacity-70"
                   />
@@ -283,7 +278,7 @@ const Settings = () => {
                   <Input
                     id="businessName"
                     name="businessName"
-                    value={profile.businessName}
+                    value={profileData.businessName}
                     onChange={handleProfileChange}
                     className="bg-gray-800/50 border-white/10"
                   />
@@ -295,7 +290,6 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          {/* Security Settings */}
           <Card className="bg-gray-900/60 border-white/10">
             <CardHeader>
               <div className="flex items-center gap-2">
