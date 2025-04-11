@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -50,6 +49,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     { name: "Settings", path: "/settings", icon: <Settings size={20} /> },
   ];
 
+  const businessName = profile?.businessName || "My Business";
+
   return (
     <>
       {/* Mobile overlay */}
@@ -93,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
             </div>
             <div>
               <p className="font-medium text-cerebro-soft">{profile?.name || "User"}</p>
-              <p className="text-sm text-cerebro-soft/60">{profile?.business_name || "My Business"}</p>
+              <p className="text-sm text-cerebro-soft/60">{businessName}</p>
             </div>
           </div>
         </div>
