@@ -5,11 +5,12 @@ export interface Task {
   id: string;
   title: string;
   completed: boolean;
-  priority: "low" | "medium" | "high";
+  priority: string; // Changed from strict union type to string to match database
   due_date?: string;
   tags: string[];
   created_at: string;
   user_id: string;
+  updated_at: string; // Make sure this field is included
 }
 
 export const getTasks = async () => {

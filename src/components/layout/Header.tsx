@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   
   const handleAvatarClick = () => {
@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
   
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
       toast.success("Signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
