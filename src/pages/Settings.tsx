@@ -14,11 +14,11 @@ import { Bell, User, Lock, Palette, Database, Globe } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Settings = () => {
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile, updateUserProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: profile?.name || "",
-    businessName: profile?.business_name || "",
+    businessName: profile?.businessName || "",
     email: user?.email || "",
   });
   
@@ -37,7 +37,7 @@ const Settings = () => {
     if (profile) {
       setFormData({
         name: profile.name || "",
-        businessName: profile.business_name || "",
+        businessName: profile.businessName || "",
         email: user?.email || "",
       });
     }
@@ -63,9 +63,9 @@ const Settings = () => {
     try {
       if (!user) throw new Error("No authenticated user");
       
-      await updateProfile({
+      await updateUserProfile({
         name: formData.name,
-        business_name: formData.businessName
+        businessName: formData.businessName
       });
       
       toast.success("Profile updated successfully");
