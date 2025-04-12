@@ -8,8 +8,8 @@ import { createTask } from "./tasksService";
 import { createNote } from "./notesService";
 import { createEvent } from "./calendarService";
 
-// Updated to use the correct API endpoint
-const GEMINI_API_KEY = "AIzaSyAkEDnb6ZajP2O57nLMZ0-_hNgWJGWI8OQ";
+// Updated to use environment variables
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyAkEDnb6ZajP2O57nLMZ0-_hNgWJGWI8OQ";
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
 
 export interface GeminiMessage {

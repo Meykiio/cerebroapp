@@ -11,7 +11,12 @@ import {
   StickyNote,
   ArrowRight,
   Check,
-  LucideProps
+  LucideProps,
+  Github,
+  Linkedin,
+  Instagram,
+  ExternalLink,
+  Languages
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -36,6 +41,35 @@ const ParticleAnimation = () => {
           }}
         />
       ))}
+    </div>
+  );
+};
+
+// Neural background animation
+const NeuralAnimation = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <svg className="w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <defs>
+          <radialGradient id="gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stopColor="rgba(139, 92, 246, 0.5)" />
+            <stop offset="100%" stopColor="rgba(139, 92, 246, 0)" />
+          </radialGradient>
+        </defs>
+        <g fill="none" stroke="url(#gradient)" strokeWidth="0.2">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <path
+              key={i}
+              d={`M${Math.random() * 100} ${Math.random() * 100} 
+                  Q${Math.random() * 100} ${Math.random() * 100}, 
+                  ${Math.random() * 100} ${Math.random() * 100} 
+                  T${Math.random() * 100} ${Math.random() * 100}`}
+              className="animate-pulse"
+              style={{ animationDelay: `${Math.random() * 3}s`, animationDuration: `${Math.random() * 5 + 10}s` }}
+            />
+          ))}
+        </g>
+      </svg>
     </div>
   );
 };
@@ -72,9 +106,19 @@ interface PricingTierProps {
   description: string;
   features: string[];
   highlighted?: boolean;
+  ctaText?: string;
+  ctaLink?: string;
 }
 
-const PricingTier = ({ name, price, description, features, highlighted = false }: PricingTierProps) => {
+const PricingTier = ({ 
+  name, 
+  price, 
+  description, 
+  features, 
+  highlighted = false,
+  ctaText = "Get Started",
+  ctaLink = "/signup"
+}: PricingTierProps) => {
   return (
     <div className={cn(
       "relative p-6 rounded-xl border backdrop-blur-sm transition-all duration-300",
@@ -103,17 +147,19 @@ const PricingTier = ({ name, price, description, features, highlighted = false }
         ))}
       </ul>
       
-      <Button 
-        className={cn(
-          "w-full mt-6",
-          highlighted 
-            ? "bg-cerebro-purple hover:bg-cerebro-purple-dark" 
-            : "bg-white/10 hover:bg-white/20"
-        )}
-      >
-        Get Started
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
+      <Link to={ctaLink}>
+        <Button 
+          className={cn(
+            "w-full mt-6 group",
+            highlighted 
+              ? "bg-cerebro-purple hover:bg-cerebro-purple-dark" 
+              : "bg-white/10 hover:bg-white/20"
+          )}
+        >
+          <span>{ctaText}</span>
+          <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </Button>
+      </Link>
     </div>
   );
 };
@@ -150,6 +196,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-cerebro-dark bg-neural-pattern">
       <ParticleAnimation />
+      <NeuralAnimation />
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-cerebro-purple/10 to-transparent opacity-20" />
       
       {/* Header */}
@@ -184,14 +231,14 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in animation-delay-300">
             <Link to="/signup">
-              <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group transition-all duration-300">
-                Get Started 
+              <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group transition-all duration-300 w-full sm:w-auto">
+                <span>Get Started Free</span>
                 <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
             </Link>
-            <Link to="/login">
-              <Button size="lg" variant="outline" className="border-white/20 text-cerebro-soft hover:bg-white/5">
-                Learn More
+            <Link to="#features">
+              <Button size="lg" variant="outline" className="border-white/20 text-cerebro-soft hover:bg-white/5 w-full sm:w-auto">
+                See Features
               </Button>
             </Link>
           </div>
@@ -213,7 +260,7 @@ const Index = () => {
       </section>
       
       {/* Features */}
-      <section className="py-20 bg-gray-900/40 relative z-10">
+      <section id="features" className="py-20 bg-gray-900/40 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4 text-gradient animate-fade-in">
             Powered by Gemini AI
@@ -258,8 +305,110 @@ const Index = () => {
         </div>
       </section>
       
-      {/* Pricing */}
+      {/* About Me Section */}
       <section className="py-20 relative z-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="md:w-1/3">
+              <div className="relative">
+                <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-cerebro-purple/50 mx-auto">
+                  <img 
+                    src="https://placehold.co/400x400/2a2a2a/8B5CF6?text=Sifeddine+Mebarki" 
+                    alt="Sifeddine Mebarki" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full bg-cerebro-purple/20 backdrop-blur-md border border-white/10 flex items-center justify-center animate-pulse">
+                  <Brain className="h-10 w-10 text-cerebro-purple" />
+                </div>
+              </div>
+              
+              <div className="flex justify-center gap-4 mt-8">
+                <a href="https://github.com/Meykiio" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+                  <Github className="h-5 w-5 text-cerebro-soft" />
+                </a>
+                <a href="https://www.linkedin.com/in/sifeddine-mebarki-a3883a18b/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+                  <Linkedin className="h-5 w-5 text-cerebro-soft" />
+                </a>
+                <a href="https://www.instagram.com/sifeddine.m/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+                  <Instagram className="h-5 w-5 text-cerebro-soft" />
+                </a>
+                <a href="https://huggingface.co/sifeddine" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+                  <Languages className="h-5 w-5 text-cerebro-soft" />
+                </a>
+              </div>
+            </div>
+            
+            <div className="md:w-2/3 mt-8 md:mt-0">
+              <h2 className="text-3xl font-bold mb-4 text-gradient animate-fade-in">
+                Meet the Creator
+              </h2>
+              <h3 className="text-2xl mb-4">Sifeddine Mebarki</h3>
+              <p className="text-cerebro-soft/80 mb-6">
+                I'm a 28-year-old Web Developer, AI Engineer, Designer, and Entrepreneur based in Algiers, Algeria. 
+                With a passion for artificial intelligence and innovative web development, I focus on building tools 
+                that empower businesses to achieve more with less effort.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-gray-800/20 p-4 rounded-lg border border-white/5">
+                  <h4 className="font-medium mb-2">Expertise</h4>
+                  <ul className="space-y-2 text-sm text-cerebro-soft/80">
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-cerebro-purple mr-2"></span>
+                      Web Development (HTML, CSS, JS, React)
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-cerebro-purple mr-2"></span>
+                      AI & Automation Engineering
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-cerebro-purple mr-2"></span>
+                      UI/UX Design & Branding
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-cerebro-purple mr-2"></span>
+                      E-commerce & Digital Business
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="bg-gray-800/20 p-4 rounded-lg border border-white/5">
+                  <h4 className="font-medium mb-2">Goals</h4>
+                  <ul className="space-y-2 text-sm text-cerebro-soft/80">
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
+                      Empower Algerians in AI innovation
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
+                      Achieve financial freedom through AI ventures
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
+                      Develop cutting-edge AI applications
+                    </li>
+                    <li className="flex items-center">
+                      <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
+                      Become an industry leader in AI development
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <Link to="https://www.linkedin.com/in/sifeddine-mebarki-a3883a18b/" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="border-cerebro-purple/50 hover:bg-cerebro-purple/20 text-cerebro-purple group">
+                  Learn More About Me
+                  <ExternalLink className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Pricing */}
+      <section className="py-20 bg-gray-900/40 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4 text-gradient animate-fade-in">
             Simple, Transparent Pricing
@@ -279,6 +428,8 @@ const Index = () => {
                 "5 AI assistant queries per day",
                 "1 workspace"
               ]}
+              ctaText="Start Free"
+              ctaLink="/signup"
             />
             
             <PricingTier 
@@ -293,6 +444,8 @@ const Index = () => {
                 "3 workspaces"
               ]}
               highlighted={true}
+              ctaText="Start 14-Day Trial"
+              ctaLink="/signup?plan=pro"
             />
             
             <PricingTier 
@@ -307,20 +460,22 @@ const Index = () => {
                 "Custom integrations",
                 "Unlimited workspaces"
               ]}
+              ctaText="Contact Sales"
+              ctaLink="/contact"
             />
           </div>
         </div>
       </section>
       
       {/* Waitlist Form */}
-      <section className="py-20 bg-gray-900/40 relative z-10">
+      <section className="py-20 relative z-10">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4 animate-fade-in">Join the Waitlist</h2>
           <p className="text-xl text-cerebro-soft/80 mb-8 max-w-2xl mx-auto animate-fade-in animation-delay-150">
             We're still putting the finishing touches on Cerebro. Sign up to be first in line when we launch.
           </p>
           
-          <form onSubmit={handleWaitlistSignup} className="max-w-md mx-auto flex gap-2 animate-fade-in animation-delay-300">
+          <form onSubmit={handleWaitlistSignup} className="max-w-md mx-auto flex flex-col sm:flex-row gap-2 animate-fade-in animation-delay-300">
             <Input 
               type="email" 
               placeholder="Enter your email"
@@ -331,7 +486,7 @@ const Index = () => {
             />
             <Button 
               type="submit" 
-              className="bg-cerebro-purple hover:bg-cerebro-purple-dark whitespace-nowrap"
+              className="bg-cerebro-purple hover:bg-cerebro-purple-dark whitespace-nowrap transition-all duration-300 hover:shadow-lg hover:shadow-cerebro-purple/20"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Joining..." : "Join Waitlist"}
@@ -341,7 +496,7 @@ const Index = () => {
       </section>
       
       {/* Testimonials */}
-      <section className="py-20 relative z-10">
+      <section className="py-20 bg-gray-900/40 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-gradient animate-fade-in">What Our Users Say</h2>
           
@@ -365,7 +520,7 @@ const Index = () => {
             ].map((testimonial, i) => (
               <div 
                 key={i} 
-                className="bg-gray-800/40 backdrop-blur-sm p-6 rounded-xl border border-white/10 animate-fade-in"
+                className="bg-gray-800/40 backdrop-blur-sm p-6 rounded-xl border border-white/10 animate-fade-in hover:border-white/20 transition-all duration-300"
                 style={{ animationDelay: `${i * 150}ms` }}
               >
                 <p className="italic text-cerebro-soft/90 mb-4">"{testimonial.quote}"</p>
@@ -386,12 +541,19 @@ const Index = () => {
           <p className="text-xl text-cerebro-soft/80 mb-8 max-w-2xl mx-auto animate-fade-in animation-delay-150">
             Join thousands of entrepreneurs and founders who use Cerebro to achieve more with less effort.
           </p>
-          <Link to="/signup">
-            <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group animate-fade-in animation-delay-300">
-              Start Free Trial 
-              <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/signup">
+              <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group animate-fade-in animation-delay-300 w-full sm:w-auto">
+                Start Free Trial 
+                <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Button>
+            </Link>
+            <Link to="#features">
+              <Button size="lg" variant="outline" className="border-white/20 text-cerebro-soft hover:bg-white/5 animate-fade-in animation-delay-400 w-full sm:w-auto">
+                Explore Features
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
       
@@ -402,6 +564,7 @@ const Index = () => {
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <Brain size={24} className="text-cerebro-purple" />
               <span className="text-xl font-bold text-gradient">Cerebro</span>
+              <span className="text-xs text-cerebro-soft/50 ml-2">Created by Sifeddine Mebarki</span>
             </div>
             
             <div className="flex gap-6 mb-4 md:mb-0">
@@ -417,6 +580,91 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      {/* Animated cursor effect */}
+      <div className="fixed hidden lg:block w-6 h-6 pointer-events-none z-50 rounded-full border border-cerebro-purple/50" id="cursor-effect"></div>
+      
+      {/* Script for cursor effect */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.getElementById('cursor-effect');
+            document.addEventListener('mousemove', (e) => {
+              if (cursor) {
+                cursor.style.left = e.clientX - 12 + 'px';
+                cursor.style.top = e.clientY - 12 + 'px';
+              }
+            });
+          });
+        `
+      }} />
+      
+      {/* Add smooth scrolling effect */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          html {
+            scroll-behavior: smooth;
+          }
+          
+          @keyframes float {
+            0% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+            100% {
+              transform: translateY(0px);
+            }
+          }
+          
+          .text-gradient {
+            background: linear-gradient(to right, #8B5CF6, #6366F1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+          }
+          
+          .glow-text {
+            text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+          }
+          
+          .animation-delay-150 {
+            animation-delay: 150ms;
+          }
+          
+          .animation-delay-300 {
+            animation-delay: 300ms;
+          }
+          
+          .animation-delay-400 {
+            animation-delay: 400ms;
+          }
+          
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+          
+          .bg-neural-pattern {
+            background-image: 
+              radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.05) 2%, transparent 0%),
+              radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.05) 2%, transparent 0%);
+            background-size: 60px 60px;
+          }
+          
+          /* Scroll-triggered animations */
+          .scroll-fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+          }
+          
+          .scroll-fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        `
+      }} />
     </div>
   );
 };

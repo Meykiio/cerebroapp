@@ -1,71 +1,55 @@
 
-# Cerebro - AI-Powered Productivity Platform
+# Cerebro AI - AI-Powered Productivity OS
 
-## About Cerebro
+## Created by Sifeddine Mebarki
 
-Cerebro is an innovative AI-powered productivity platform designed to help you manage tasks, schedule events, track KPIs, and organize notes with the power of artificial intelligence. Developed by [Sifeddine Mebarki](https://github.com/Meykiio), Cerebro combines modern design with cutting-edge AI to enhance your daily workflow.
+Cerebro AI is an advanced productivity platform that combines AI-driven task management, goal planning, calendar syncing, and KPI tracking in one powerful interface.
 
-## Key Features
+## About the Creator
 
-- **AI Assistant**: Natural language interface for managing your productivity
-- **Task Management**: Create, organize, and track your tasks with priority levels
-- **Calendar Integration**: Schedule and manage your events seamlessly
-- **KPI Metrics**: Monitor your key performance indicators with visual analytics
-- **Smart Notes**: Create and organize notes with AI-powered insights
-- **Modern UI**: Clean, responsive interface with dark mode support
+### Sifeddine Mebarki
 
-## Technologies Used
+Sifeddine is a 28-year-old Web Developer, AI Engineer, Designer, and Entrepreneur based in Algiers, Algeria. With deep expertise in artificial intelligence, web development, and business innovation, he's passionate about creating tools that drive productivity and business growth.
+
+#### Expertise & Skills
+
+- **Programming & Development:** HTML, CSS, JavaScript, Node.js, React, MongoDB, Python, WordPress
+- **AI & Automation:** ChatGPT API, AI-powered automation, Machine Learning, AI-Powered Web Apps
+- **Design & Branding:** Photoshop, Adobe Illustrator, Inkscape, UI/UX Design
+- **Business & Entrepreneurship:** AI startups, E-commerce automation
+
+#### Connect with Sifeddine
+
+- **Instagram:** [sifeddine.m](https://www.instagram.com/sifeddine.m/)
+- **Facebook:** [sifeddinemeb](https://web.facebook.com/sifeddinemeb)
+- **LinkedIn:** [Sifeddine Mebarki](https://www.linkedin.com/in/sifeddine-mebarki-a3883a18b/?originalSubdomain=dz)
+- **GitHub:** [Meykiio](https://github.com/Meykiio)
+- **Hugging Face:** [sifeddine](https://huggingface.co/sifeddine)
+- **TikTok:** [sifeddine_meb](https://tiktok.com/@sifeddine_meb)
+
+## Project Features
+
+- **Task & Goal Management:** Smart task management with AI assistance
+- **Calendar Integration:** Intelligent scheduling and time management
+- **KPI Metrics Tracking:** Visualize and analyze business performance metrics
+- **AI-Powered Assistant:** Natural language processing for task creation and management
+- **Notes & Ideas:** Capture and organize thoughts and plans
+
+## Tech Stack
 
 - React with TypeScript
 - Tailwind CSS for styling
 - Supabase for backend and authentication
-- Gemini AI for natural language processing
-- Chart.js for data visualization
+- Gemini AI for intelligent assistance
+- Recharts for data visualization
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js and npm installed
-
-### Installation
-
-```sh
-# Clone the repository
-git clone https://github.com/Meykiio/cerebro.git
-
-# Navigate to project directory
-cd cerebro
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-## About the Developer
-
-### Sifeddine Mebarki
-
-Sifeddine is a 28-year-old Web Developer, AI Engineer, Designer, and Entrepreneur based in Algiers, Algeria, with a passion for artificial intelligence, automation, and innovative web development. He specializes in building AI-driven applications that enhance productivity and streamline workflows.
-
-#### Expertise & Skills:
-
-- **Programming & Development**: HTML, CSS, JavaScript, Node.js, React, MongoDB, Python, WordPress
-- **AI & Automation**: Gemini AI, ChatGPT API, Data Analysis, Machine Learning, AI-Powered Web Apps
-- **Design**: UI/UX Design, Branding, Product Design with tools like Photoshop and Illustrator
-- **Business**: AI startups, E-commerce automation, Print-on-Demand, Digital product scaling
-
-#### Connect with Sifeddine:
-
-- [Instagram](https://www.instagram.com/sifeddine.m/)
-- [Facebook](https://web.facebook.com/sifeddinemeb)
-- [LinkedIn](https://www.linkedin.com/in/sifeddine-mebarki-a3883a18b/)
-- [GitHub](https://github.com/Meykiio)
-- [Hugging Face](https://huggingface.co/sifeddine)
-- [TikTok](https://tiktok.com/@sifeddine_meb)
+1. Clone the repository
+2. Copy `.env.example` to `.env` and add your API keys
+3. Install dependencies with `npm install`
+4. Run the development server with `npm run dev`
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is proprietary and created by Sifeddine Mebarki.
