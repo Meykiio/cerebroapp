@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bell, BellDot, ChevronDown, Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,12 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationsDropdown from "./NotificationsDropdown";
-
 interface HeaderProps {
   toggleSidebar: () => void;
   toggleAssistant: () => void;
 }
-
 const Header: React.FC<HeaderProps> = ({
   toggleSidebar,
   toggleAssistant
@@ -21,13 +18,10 @@ const Header: React.FC<HeaderProps> = ({
     profile,
     logout
   } = useAuth();
-  
   const [showUserMenu, setShowUserMenu] = useState(false);
-  
   const handleAvatarClick = () => {
     setShowUserMenu(!showUserMenu);
   };
-  
   const handleSignOut = async () => {
     try {
       await logout();
@@ -43,9 +37,7 @@ const Header: React.FC<HeaderProps> = ({
     if (!profile?.name) return "U";
     return profile.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
   };
-  
-  return (
-    <header className="bg-gray-900/80 border-b border-white/10 backdrop-blur-sm px-4 py-2 flex items-center justify-between z-30 relative">
+  return <header className="bg-gray-900/80 border-b border-white/10 backdrop-blur-sm px-4 flex items-center justify-between z-30 relative py-[18px]">
       {/* Left section - Mobile Menu Toggle and Page Title */}
       <div className="flex items-center">
         <Button variant="ghost" size="icon" className="lg:hidden mr-2" onClick={toggleSidebar}>
@@ -77,8 +69,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           {/* User Dropdown */}
-          {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-gray-900 border border-white/10 rounded-md shadow-lg z-50">
+          {showUserMenu && <div className="absolute right-0 mt-2 w-64 bg-gray-900 border border-white/10 rounded-md shadow-lg z-50">
               <div className="p-3 border-b border-white/10">
                 <p className="font-semibold">{profile?.name}</p>
                 <p className="text-sm text-cerebro-soft/70 truncate">{user?.email}</p>
@@ -88,12 +79,9 @@ const Header: React.FC<HeaderProps> = ({
                   Sign Out
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default Header;
