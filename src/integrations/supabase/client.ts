@@ -3,17 +3,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Use hard-coded values for development if environment variables are not available
+// In production, these should be set in the environment
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://ebmdkphqohmipfykjyxr.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVibWRrcGhxb2htaXBmeWtqeXhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzMjU1NzQsImV4cCI6MjA1OTkwMTU3NH0.A8bJQWKWNwlt-v1kAeNQx8LTOESdbBfrjpR5VqbZuhk';
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  console.error("Missing Supabase environment variables. Please check your .env file.");
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.warn("Using default Supabase credentials. For production, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.");
 }
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(
-  SUPABASE_URL || "", 
-  SUPABASE_PUBLISHABLE_KEY || ""
-);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);

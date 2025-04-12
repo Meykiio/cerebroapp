@@ -244,7 +244,6 @@ const MetricsPage = () => {
         </div>
       </div>
 
-      {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
