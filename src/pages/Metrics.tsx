@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LineChart, BarChart, PieChart, DonutChart } from "@tremor/react";
-import { ArrowUpRight, ArrowDownRight, Plus, Trash2, Edit, Save, X, Download, Upload, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, Doughnut } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Plus, Trash2, Edit, Save, X, Download, Upload, BarChart3, PieChart as PieChartIcon, LineChart as LineChartIcon, Donut } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
