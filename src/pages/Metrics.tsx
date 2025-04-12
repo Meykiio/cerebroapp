@@ -214,10 +214,7 @@ const MetricsPage = () => {
           
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-[150px] bg-gray-800/60 border-white/10">
-              <SelectValue 
-                placeholder="Time Range" 
-                className="flex items-center"
-              >
+              <SelectValue placeholder="Time Range">
                 <div className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
                   <span>{dateRange}</span>
