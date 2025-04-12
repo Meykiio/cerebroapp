@@ -10,6 +10,14 @@ const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [assistantOpen, setAssistantOpen] = useState(false);
 
+  // Check local storage for sidebar state on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem("sidebar-open");
+    if (savedState !== null) {
+      setSidebarOpen(savedState === "true");
+    }
+  }, []);
+  
   // Set up the reminder check system when the dashboard loads
   useEffect(() => {
     // Request notification permissions
@@ -24,6 +32,12 @@ const DashboardLayout: React.FC = () => {
     };
   }, []);
 
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+    localStorage.setItem("sidebar-open", String(!sidebarOpen));
+  };
+
   return (
     <div className="flex h-screen bg-cerebro-dark overflow-hidden">
       {/* Sidebar */}
@@ -32,7 +46,7 @@ const DashboardLayout: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+          toggleSidebar={toggleSidebar} 
           toggleAssistant={() => setAssistantOpen(!assistantOpen)}
         />
         

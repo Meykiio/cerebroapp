@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -175,6 +174,58 @@ const TypedHeadline = () => {
   );
 };
 
+// Dashboard screenshot carousel
+const DashboardCarousel = () => {
+  const screenshots = [
+    "/lovable-uploads/e2e6e206-b7b7-4b96-b93b-8465d6d54d1e.png",
+    "/lovable-uploads/bb8ce9c8-f11c-4f21-ac86-e3deca53ebc4.png",
+    "/lovable-uploads/5f68d36c-77e1-4049-86e3-afac8b52883e.png",
+    "/lovable-uploads/bab1370a-b5e7-417d-a296-b8e8a5b151ab.png",
+    "/lovable-uploads/7896cda4-d2c2-4815-9981-731151096eb0.png",
+  ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Auto-rotate images every 4 seconds
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((current) => (current + 1) % screenshots.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [screenshots.length]);
+
+  return (
+    <div className="relative mt-16 w-full max-w-5xl mx-auto animate-float">
+      <div className="absolute inset-0 bg-gradient-to-b from-cerebro-purple/30 to-transparent rounded-lg filter blur-[64px] opacity-50 transform -translate-y-1/2"></div>
+      <div className="relative bg-gray-900/80 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl overflow-hidden">
+        {/* Image */}
+        <div className="aspect-[16/9] w-full">
+          {screenshots.map((src, i) => (
+            <img 
+              key={i}
+              src={src} 
+              alt={`Dashboard screenshot ${i+1}`}
+              className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-1000 ${i === activeIndex ? 'opacity-100' : 'opacity-0'}`}
+            />
+          ))}
+        </div>
+
+        {/* Image selector dots */}
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {screenshots.map((_, i) => (
+            <button 
+              key={i} 
+              onClick={() => setActiveIndex(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-colors ${i === activeIndex ? 'bg-cerebro-purple' : 'bg-white/30'}`}
+              aria-label={`View screenshot ${i+1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Index = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -245,18 +296,7 @@ const Index = () => {
         </div>
         
         {/* Floating dashboard preview */}
-        <div className="relative mt-16 w-full max-w-5xl mx-auto animate-float">
-          <div className="absolute inset-0 bg-gradient-to-b from-cerebro-purple/30 to-transparent rounded-lg filter blur-[64px] opacity-50 transform -translate-y-1/2"></div>
-          <div className="relative bg-gray-900/80 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl overflow-hidden">
-            <div className="aspect-[16/9] w-full">
-              <img 
-                src="https://placehold.co/1920x1080/2a2a2a/4f46e5?text=Cerebro+Dashboard" 
-                alt="Dashboard preview" 
-                className="w-full h-full object-cover" 
-              />
-            </div>
-          </div>
-        </div>
+        <DashboardCarousel />
       </section>
       
       {/* Features */}
@@ -313,7 +353,7 @@ const Index = () => {
               <div className="relative">
                 <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-cerebro-purple/50 mx-auto">
                   <img 
-                    src="https://placehold.co/400x400/2a2a2a/8B5CF6?text=Sifeddine+Mebarki" 
+                    src="/lovable-uploads/78f9c991-c4e2-49d2-b655-1be8cab9903b.png" 
                     alt="Sifeddine Mebarki" 
                     className="w-full h-full object-cover"
                   />
