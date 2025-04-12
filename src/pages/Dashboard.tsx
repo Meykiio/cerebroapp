@@ -1,56 +1,13 @@
 
 import { useState } from "react";
-import { Brain, Sparkles } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import TasksWidget from "@/components/dashboard/TasksWidget";
 import CalendarWidget from "@/components/dashboard/CalendarWidget";
 import KpiWidget from "@/components/dashboard/KpiWidget";
 import NotesWidget from "@/components/dashboard/NotesWidget";
-import { toast } from "sonner";
 
 const Dashboard = () => {
   const { profile } = useAuth();
-  const [geminiQuery, setGeminiQuery] = useState("");
-  
-  const handleAssist = () => {
-    if (!geminiQuery.trim()) {
-      toast.error("Please enter a question or command");
-      return;
-    }
-    
-    toast.info(`Processing query: "${geminiQuery}"`, {
-      description: "Gemini Assistant is thinking...",
-      duration: 3000,
-    });
-    
-    // Find Gemini assistant component and open it
-    const geminiAssistant = document.querySelector('[data-gemini-toggle]');
-    if (geminiAssistant) {
-      // @ts-ignore
-      geminiAssistant.click();
-    }
-    
-    // Find the Gemini input field and enter the query
-    setTimeout(() => {
-      const geminiTextarea = document.querySelector('[data-gemini-input]');
-      if (geminiTextarea) {
-        // @ts-ignore
-        geminiTextarea.value = geminiQuery;
-        
-        // Find the send button and click it
-        const sendButton = document.querySelector('[data-gemini-send]');
-        if (sendButton) {
-          // @ts-ignore
-          sendButton.click();
-        }
-      }
-      
-      // Reset the input after sending
-      setGeminiQuery("");
-    }, 500);
-  }
   
   return (
     <div className="space-y-6">
@@ -61,30 +18,6 @@ const Dashboard = () => {
             Welcome back, {profile?.name?.split(" ")[0] || "User"}
           </h1>
           <p className="text-cerebro-soft/70">Here's an overview of your productivity</p>
-        </div>
-        
-        <div className="flex gap-2">
-          <div className="relative max-w-xs">
-            <Input
-              placeholder="Ask Gemini something..."
-              className="pr-10 bg-gray-800/50 border-white/10 w-full"
-              value={geminiQuery}
-              onChange={(e) => setGeminiQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleAssist();
-                }
-              }}
-            />
-            <Brain className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-cerebro-purple" />
-          </div>
-          <Button 
-            className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
-            onClick={handleAssist}
-          >
-            <Sparkles className="mr-2 h-4 w-4" />
-            Assist
-          </Button>
         </div>
       </div>
       

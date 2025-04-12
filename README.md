@@ -1,73 +1,71 @@
-# Welcome to your Lovable project
 
-## Project info
+# Cerebro - AI-Powered Productivity Platform
 
-**URL**: https://lovable.dev/projects/3469ddfe-5057-4a0c-933b-b0674a94af1a
+## About Cerebro
 
-## How can I edit this code?
+Cerebro is an innovative AI-powered productivity platform designed to help you manage tasks, schedule events, track KPIs, and organize notes with the power of artificial intelligence. Developed by [Sifeddine Mebarki](https://github.com/Meykiio), Cerebro combines modern design with cutting-edge AI to enhance your daily workflow.
 
-There are several ways of editing your application.
+## Key Features
 
-**Use Lovable**
+- **AI Assistant**: Natural language interface for managing your productivity
+- **Task Management**: Create, organize, and track your tasks with priority levels
+- **Calendar Integration**: Schedule and manage your events seamlessly
+- **KPI Metrics**: Monitor your key performance indicators with visual analytics
+- **Smart Notes**: Create and organize notes with AI-powered insights
+- **Modern UI**: Clean, responsive interface with dark mode support
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3469ddfe-5057-4a0c-933b-b0674a94af1a) and start prompting.
+## Technologies Used
 
-Changes made via Lovable will be committed automatically to this repo.
+- React with TypeScript
+- Tailwind CSS for styling
+- Supabase for backend and authentication
+- Gemini AI for natural language processing
+- Chart.js for data visualization
 
-**Use your preferred IDE**
+## Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js and npm installed
 
-Follow these steps:
+### Installation
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone https://github.com/Meykiio/cerebro.git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navigate to project directory
+cd cerebro
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## About the Developer
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Sifeddine Mebarki
 
-**Use GitHub Codespaces**
+Sifeddine is a 28-year-old Web Developer, AI Engineer, Designer, and Entrepreneur based in Algiers, Algeria, with a passion for artificial intelligence, automation, and innovative web development. He specializes in building AI-driven applications that enhance productivity and streamline workflows.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+#### Expertise & Skills:
 
-## What technologies are used for this project?
+- **Programming & Development**: HTML, CSS, JavaScript, Node.js, React, MongoDB, Python, WordPress
+- **AI & Automation**: Gemini AI, ChatGPT API, Data Analysis, Machine Learning, AI-Powered Web Apps
+- **Design**: UI/UX Design, Branding, Product Design with tools like Photoshop and Illustrator
+- **Business**: AI startups, E-commerce automation, Print-on-Demand, Digital product scaling
 
-This project is built with:
+#### Connect with Sifeddine:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- [Instagram](https://www.instagram.com/sifeddine.m/)
+- [Facebook](https://web.facebook.com/sifeddinemeb)
+- [LinkedIn](https://www.linkedin.com/in/sifeddine-mebarki-a3883a18b/)
+- [GitHub](https://github.com/Meykiio)
+- [Hugging Face](https://huggingface.co/sifeddine)
+- [TikTok](https://tiktok.com/@sifeddine_meb)
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/3469ddfe-5057-4a0c-933b-b0674a94af1a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License - see the LICENSE file for details.

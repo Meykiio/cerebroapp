@@ -104,7 +104,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-cerebro-purple" />
-            <h2 className="font-semibold">Gemini Assistant</h2>
+            <h2 className="font-semibold">AI Assistant</h2>
           </div>
           <Button
             variant="ghost"

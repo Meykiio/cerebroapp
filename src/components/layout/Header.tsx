@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ChevronDown, Menu, Sparkles } from "lucide-react";
+import { Bell, BellDot, ChevronDown, Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -42,22 +42,13 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar, toggleAssistant }) => {
   };
   
   return (
-    <header className="bg-gray-900/80 border-b border-white/10 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
+    <header className="bg-gray-900/80 border-b border-white/10 backdrop-blur-sm px-4 py-2 flex items-center justify-between z-20 relative">
       {/* Left section - Mobile Menu Toggle and Page Title */}
       <div className="flex items-center">
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden mr-2"
-          onClick={toggleSidebar}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden md:flex mr-2"
+          className="md:flex mr-2"
           onClick={toggleSidebar}
         >
           <Menu className="h-5 w-5" />

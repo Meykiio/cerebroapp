@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,6 @@ import {
   ClipboardList,
   LineChart,
   Home,
-  LayoutGrid,
   Settings,
   StickyNote,
 } from "lucide-react";
@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
     { name: "Settings", path: "/settings", icon: <Settings size={20} /> },
   ];
 
-  const businessName = profile?.businessName || "My Business";
+  const businessName = profile?.businessName || "Cerebro AI";
 
   return (
     <>
@@ -89,11 +89,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-cerebro-purple flex items-center justify-center">
               <span className="text-white font-medium">
-                {profile?.name?.charAt(0) || "U"}
+                {profile?.name?.charAt(0) || "S"}
               </span>
             </div>
             <div>
-              <p className="font-medium text-cerebro-soft">{profile?.name || "User"}</p>
+              <p className="font-medium text-cerebro-soft">{profile?.name || "Sifeddine Mebarki"}</p>
               <p className="text-sm text-cerebro-soft/60">{businessName}</p>
             </div>
           </div>

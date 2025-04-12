@@ -139,7 +139,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-transparent"
+                      className="h-6 w-6 hover:text-red-400 hover:bg-transparent"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteNotification(notification.id);

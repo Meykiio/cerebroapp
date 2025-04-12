@@ -110,6 +110,27 @@
     animation: float 5s ease-in-out infinite;
   }
 
+  /* Z-index utilities for proper stacking */
+  .z-header {
+    z-index: 40;
+  }
+  
+  .z-sidebar {
+    z-index: 30;
+  }
+  
+  .z-dropdown {
+    z-index: 50;
+  }
+  
+  .z-modal {
+    z-index: 100;
+  }
+  
+  .z-toast {
+    z-index: 1000;
+  }
+
   @keyframes float {
     0%, 100% {
       transform: translateY(0);
