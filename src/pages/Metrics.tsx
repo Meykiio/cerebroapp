@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +13,6 @@ import {
 import { Brain, TrendingUp, BarChart3, PlusCircle, RefreshCw, Calendar, Download, Filter, Share2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
-// Sample KPI data
 const kpiData = {
   revenue: [
     { month: 'Jan', value: 12000 },
@@ -102,7 +100,6 @@ const kpiData = {
   ],
 };
 
-// KPI summaries from "Gemini"
 const kpiInsights = {
   revenue: "Revenue is growing steadily at an average of 15% month over month, with a particularly strong performance in Q4. The annual growth trajectory suggests a 233% increase from January to December, significantly exceeding industry benchmarks.",
   customers: "Customer acquisition shows consistent growth with an average monthly increase of 8.6%. The customer base has nearly tripled in the past year, indicating strong market penetration and effective acquisition strategies.",
@@ -112,7 +109,6 @@ const kpiInsights = {
   profitMargin: "Profit margin has increased from 15% to 27%, reflecting improved operational efficiency, better pricing strategies, and economies of scale as your business grows. Continue monitoring costs while maintaining product quality.",
 };
 
-// Combined data for multi-metric view
 const combinedData = kpiData.revenue.map((item, index) => ({
   month: item.month,
   revenue: item.value,
@@ -129,7 +125,6 @@ const MetricsPage = () => {
   const [isAddMetricOpen, setIsAddMetricOpen] = useState(false);
   const [viewType, setViewType] = useState("line");
   
-  // Helper function to calculate percentage change
   const calculateChange = (data: {month: string, value: number}[]) => {
     if (data.length < 2) return 0;
     const current = data[data.length - 1].value;
@@ -146,7 +141,6 @@ const MetricsPage = () => {
     profitMargin: calculateChange(kpiData.profitMargin),
   };
 
-  // Get filtered data based on time range
   const getFilteredData = (data: any[], range: string) => {
     if (range === "month") return data.slice(-1);
     if (range === "quarter") return data.slice(-3);
@@ -154,7 +148,6 @@ const MetricsPage = () => {
     return data; // year
   };
 
-  // Handle downloading data
   const handleDownloadData = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(kpiData[currentTab as keyof typeof kpiData]));
     const downloadAnchorNode = document.createElement('a');
@@ -221,10 +214,15 @@ const MetricsPage = () => {
           
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-[150px] bg-gray-800/60 border-white/10">
-              <div className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Time Range" />
-              </div>
+              <SelectValue 
+                placeholder="Time Range" 
+                className="flex items-center"
+              >
+                <div className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  <span>{dateRange}</span>
+                </div>
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-white/10">
               <SelectItem value="month">This Month</SelectItem>
@@ -248,7 +246,6 @@ const MetricsPage = () => {
 
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {/* Revenue Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -267,7 +264,6 @@ const MetricsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Customers Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -286,7 +282,6 @@ const MetricsPage = () => {
           </CardContent>
         </Card>
 
-        {/* CAC Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -305,7 +300,6 @@ const MetricsPage = () => {
           </CardContent>
         </Card>
 
-        {/* Churn Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -324,7 +318,6 @@ const MetricsPage = () => {
           </CardContent>
         </Card>
         
-        {/* Conversion Rate Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -343,7 +336,6 @@ const MetricsPage = () => {
           </CardContent>
         </Card>
         
-        {/* Profit Margin Card */}
         <Card className="bg-gray-900/60 border-white/10">
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
@@ -363,7 +355,6 @@ const MetricsPage = () => {
         </Card>
       </div>
 
-      {/* Chart Visualization */}
       <Card className="bg-gray-900/60 border-white/10">
         <CardHeader className="pb-2">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -527,7 +518,6 @@ const MetricsPage = () => {
               </div>
             </div>
             
-            {/* AI Insight */}
             <div className="lg:col-span-1">
               <Card className="h-full bg-gray-800/30 border-white/5">
                 <CardHeader className="pb-2">
@@ -591,7 +581,6 @@ const MetricsPage = () => {
         </CardContent>
       </Card>
       
-      {/* Forecast Card */}
       <Card className="bg-gray-900/60 border-white/10">
         <CardHeader>
           <CardTitle>Forecasted Growth</CardTitle>
