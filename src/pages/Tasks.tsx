@@ -16,11 +16,13 @@ import {
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+type TaskPriority = "high" | "medium" | "low";
+
 const Tasks = () => {
   const { user, profile } = useAuth();
   const queryClient = useQueryClient();
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskPriority, setNewTaskPriority] = useState("medium");
+  const [newTaskPriority, setNewTaskPriority] = useState<TaskPriority>("medium");
   const [newTaskTags, setNewTaskTags] = useState("");
   const [isAddingTask, setIsAddingTask] = useState(false);
   
@@ -65,24 +67,21 @@ const Tasks = () => {
     }
   });
   
-  const handleAddTask = async () => {
+  const handleAddTask = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent form refresh
     if (!newTaskTitle.trim() || !user) return;
     
     setIsAddingTask(true);
     
     try {
-      await createTask({
+      await createTaskMutation.mutate({
         title: newTaskTitle,
         completed: false,
-        priority: newTaskPriority as string,
+        priority: newTaskPriority,
         tags: newTaskTags?.split(",").map(tag => tag.trim()).filter(tag => tag !== "") || [],
         user_id: user.id,
         updated_at: new Date().toISOString()
       });
-      
-      setNewTaskTitle("");
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task added successfully");
     } catch (error) {
       console.error("Error adding task:", error);
       toast.error("Failed to add task");

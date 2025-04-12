@@ -1,35 +1,32 @@
-
-import { useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import TasksWidget from "@/components/dashboard/TasksWidget";
-import CalendarWidget from "@/components/dashboard/CalendarWidget";
-import KpiWidget from "@/components/dashboard/KpiWidget";
 import NotesWidget from "@/components/dashboard/NotesWidget";
+import CalendarWidget from "@/components/dashboard/CalendarWidget";
 
-const Dashboard = () => {
-  const { profile } = useAuth();
-  
+export default function Dashboard() {
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
   return (
-    <div className="space-y-6">
-      {/* Hero section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-cerebro-soft">
-            Welcome back, {profile?.name?.split(" ")[0] || "User"}
-          </h1>
-          <p className="text-cerebro-soft/70">Here's an overview of your productivity</p>
-        </div>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-white">Welcome back, {profile?.name?.split(" ")[0] || "User"}</h1>
+        <p className="text-gray-400">Here's an overview of your productivity</p>
       </div>
       
-      {/* Widgets Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <TasksWidget />
         <CalendarWidget />
         <NotesWidget />
-        <KpiWidget />
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

@@ -1,14 +1,15 @@
-
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Brain, Calendar, ChevronLeft, ChevronRight, ClipboardList, LineChart, Home, Settings, StickyNote } from "lucide-react";
+import { Brain, Calendar, ChevronLeft, ChevronRight, ClipboardList, LineChart, Home, Settings, StickyNote, LayoutDashboard, CheckSquare, FileText } from "lucide-react";
+
 interface SidebarProps {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
+
 const Sidebar: React.FC<SidebarProps> = ({
   open,
   setOpen
@@ -33,31 +34,15 @@ const Sidebar: React.FC<SidebarProps> = ({
     setOpen(newState);
     localStorage.setItem("sidebar-open", String(newState));
   };
-  const navItems = [{
-    name: "Dashboard",
-    path: "/dashboard",
-    icon: <Home size={20} />
-  }, {
-    name: "Tasks",
-    path: "/tasks",
-    icon: <ClipboardList size={20} />
-  }, {
-    name: "Calendar",
-    path: "/calendar",
-    icon: <Calendar size={20} />
-  }, {
-    name: "KPI Metrics",
-    path: "/metrics",
-    icon: <LineChart size={20} />
-  }, {
-    name: "Notes",
-    path: "/notes",
-    icon: <StickyNote size={20} />
-  }, {
-    name: "Settings",
-    path: "/settings",
-    icon: <Settings size={20} />
-  }];
+
+  const navigation = [
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Tasks", path: "/tasks", icon: CheckSquare },
+    { name: "Calendar", path: "/calendar", icon: Calendar },
+    { name: "Notes", path: "/notes", icon: FileText },
+    { name: "Settings", path: "/settings", icon: Settings },
+  ];
+
   const businessName = profile?.businessName || "Cerebro AI";
   return <>
       {/* Mobile overlay */}
@@ -88,20 +73,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map(item => (
+          {navigation.map(item => (
             <Link key={item.path} to={item.path}>
               <Button 
-                variant="ghost" 
+                variant="ghost"
                 className={cn(
-                  "w-full justify-start gap-3 font-normal", 
-                  !open && "px-0 justify-center",
-                  location.pathname === item.path 
-                    ? "bg-cerebro-purple/20 text-cerebro-purple" 
-                    : "text-cerebro-soft/80 hover:text-cerebro-soft hover:bg-white/5"
+                  "w-full justify-start",
+                  location.pathname === item.path ? "bg-gray-800" : "hover:bg-gray-800"
                 )}
               >
-                <span className="flex-shrink-0">{item.icon}</span>
-                {open && <span>{item.name}</span>}
+                {React.createElement(item.icon, { size: 20 })}
+                <span className={cn("ml-3", !open && "hidden")}>
+                  {item.name}
+                </span>
               </Button>
             </Link>
           ))}
@@ -121,4 +105,5 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
     </>;
 };
+
 export default Sidebar;

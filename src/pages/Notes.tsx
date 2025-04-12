@@ -87,7 +87,8 @@ const NotesPage = () => {
       title,
       content,
       tags,
-      user_id: user.id  // Add the user_id here
+      user_id: user.id,
+      updated_at: new Date().toISOString()
     });
   };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bell, BellDot, ChevronDown, Menu, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationsDropdown from "./NotificationsDropdown";
+import { useNavigate } from "react-router-dom";
+
 interface HeaderProps {
   toggleSidebar: () => void;
   toggleAssistant: () => void;
@@ -20,16 +21,17 @@ const Header: React.FC<HeaderProps> = ({
     logout
   } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+
   const handleAvatarClick = () => {
     setShowUserMenu(!showUserMenu);
   };
   const handleSignOut = async () => {
     try {
       await logout();
-      toast.success("Signed out successfully");
+      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
     }
   };
 

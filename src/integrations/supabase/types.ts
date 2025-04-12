@@ -51,6 +51,36 @@ export type Database = {
         }
         Relationships: []
       }
+      logs: {
+        Row: {
+          id: string
+          level: 'info' | 'warn' | 'error' | 'debug'
+          message: string
+          service: string
+          timestamp: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          level: 'info' | 'warn' | 'error' | 'debug'
+          message: string
+          service: string
+          timestamp?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          level?: 'info' | 'warn' | 'error' | 'debug'
+          message?: string
+          service?: string
+          timestamp?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string | null

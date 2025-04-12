@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,11 +15,13 @@ import {
   Linkedin,
   Instagram,
   ExternalLink,
-  Languages
+  Languages,
+  CheckCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Animated background particles
 const ParticleAnimation = () => {
@@ -178,11 +179,10 @@ const TypedHeadline = () => {
 // Dashboard screenshot carousel
 const DashboardCarousel = () => {
   const screenshots = [
-    "/lovable-uploads/e2e6e206-b7b7-4b96-b93b-8465d6d54d1e.png",
-    "/lovable-uploads/bb8ce9c8-f11c-4f21-ac86-e3deca53ebc4.png",
-    "/lovable-uploads/5f68d36c-77e1-4049-86e3-afac8b52883e.png",
-    "/lovable-uploads/bab1370a-b5e7-417d-a296-b8e8a5b151ab.png",
-    "/lovable-uploads/7896cda4-d2c2-4815-9981-731151096eb0.png",
+    "/images/dash-home.png",
+    "/images/dash-tasks.png",
+    "/images/dash-calendar.png",
+    "/images/dash-notes.png"
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -228,23 +228,14 @@ const DashboardCarousel = () => {
 };
 
 const Index = () => {
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
   
-  const handleWaitlistSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Thank you for joining our waitlist!");
-      setEmail("");
-      setIsSubmitting(false);
-    }, 1000);
-  };
-  
+  const features = [
+    { title: "Task Management", description: "Organize and track your tasks efficiently", image: "/images/dash-tasks.png" },
+    { title: "Calendar Integration", description: "Schedule and manage your events seamlessly", image: "/images/dash-calendar.png" },
+    { title: "Note Taking", description: "Capture and organize your thoughts and ideas", image: "/images/dash-notes.png" },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-cerebro-dark bg-neural-pattern">
       <ParticleAnimation />
@@ -252,24 +243,26 @@ const Index = () => {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-cerebro-purple/10 to-transparent opacity-20" />
       
       {/* Header */}
-      <header className="border-b border-white/10 bg-gray-900/40 backdrop-blur-md relative z-10">
-        <div className="container mx-auto flex items-center justify-between py-4 px-4">
+      <header className="fixed top-0 w-full bg-gray-900/80 backdrop-blur-sm z-50 border-b border-white/10">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <Brain size={32} className="text-cerebro-purple animate-pulse" />
-            <span className="text-2xl font-bold text-gradient">Cerebro</span>
+            <span className="text-xl font-bold text-white">Cerebro AI</span>
           </div>
-          
           <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="ghost" className="text-cerebro-soft hover:text-white hover:bg-white/10">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="bg-cerebro-purple hover:bg-cerebro-purple-dark animate-fade-in">
-                Sign Up
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button>Go to Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -346,15 +339,15 @@ const Index = () => {
         </div>
       </section>
       
-      {/* About Me Section */}
-      <section className="py-20 relative z-10">
+      {/* About Me Section - Hidden but preserved in code */}
+      <section className="hidden py-20 relative z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="md:w-1/3">
               <div className="relative">
                 <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-cerebro-purple/50 mx-auto">
                   <img 
-                    src="/lovable-uploads/78f9c991-c4e2-49d2-b655-1be8cab9903b.png" 
+                    src="/images/profile-pic.png" 
                     alt="Sifeddine Mebarki" 
                     className="w-full h-full object-cover"
                   />
@@ -505,34 +498,6 @@ const Index = () => {
               ctaLink="/contact"
             />
           </div>
-        </div>
-      </section>
-      
-      {/* Waitlist Form */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4 animate-fade-in">Join the Waitlist</h2>
-          <p className="text-xl text-cerebro-soft/80 mb-8 max-w-2xl mx-auto animate-fade-in animation-delay-150">
-            We're still putting the finishing touches on Cerebro. Sign up to be first in line when we launch.
-          </p>
-          
-          <form onSubmit={handleWaitlistSignup} className="max-w-md mx-auto flex flex-col sm:flex-row gap-2 animate-fade-in animation-delay-300">
-            <Input 
-              type="email" 
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="bg-white/10 border-white/20 focus-visible:ring-cerebro-purple"
-            />
-            <Button 
-              type="submit" 
-              className="bg-cerebro-purple hover:bg-cerebro-purple-dark whitespace-nowrap transition-all duration-300 hover:shadow-lg hover:shadow-cerebro-purple/20"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Joining..." : "Join Waitlist"}
-            </Button>
-          </form>
         </div>
       </section>
       

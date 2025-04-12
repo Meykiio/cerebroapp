@@ -13,6 +13,18 @@ import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getEvents, createEvent, deleteEvent } from "@/services/calendarService";
 import { useAuth } from "@/contexts/AuthContext";
+import { startOfDay, endOfDay, isWithinInterval } from "date-fns";
+
+type EventType = "meeting" | "reminder" | "task" | "other";
+
+interface NewEvent {
+  title: string;
+  date: Date;
+  endDate: Date;
+  type: EventType;
+  description: string;
+  isReminder: boolean;
+}
 
 const CalendarPage = () => {
   const queryClient = useQueryClient();
@@ -22,14 +34,7 @@ const CalendarPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Form state
-  const [newEvent, setNewEvent] = useState<{
-    title: string;
-    date: Date;
-    endDate: Date;
-    type: "meeting" | "call" | "deadline" | "reminder";
-    description: string;
-    isReminder: boolean;
-  }>({
+  const [newEvent, setNewEvent] = useState<NewEvent>({
     title: "",
     date: new Date(),
     endDate: new Date(),
@@ -124,7 +129,7 @@ const CalendarPage = () => {
   };
 
   // Handle event type change
-  const handleTypeChange = (value: "meeting" | "call" | "deadline" | "reminder") => {
+  const handleTypeChange = (value: "meeting" | "reminder" | "task" | "other") => {
     setNewEvent(prev => ({ ...prev, type: value }));
   };
 
@@ -133,37 +138,6 @@ const CalendarPage = () => {
     const { name, value } = e.target;
     const newDate = new Date(value);
     setNewEvent(prev => ({ ...prev, [name]: newDate }));
-  };
-
-  // Add new event
-  const handleAddEvent = () => {
-    if (!user) {
-      toast.error("You must be logged in to create events");
-      return;
-    }
-    
-    const eventColor = 
-      newEvent.type === "meeting" ? "bg-cerebro-purple" :
-      newEvent.type === "call" ? "bg-cerebro-cyan" :
-      newEvent.type === "deadline" ? "bg-red-500" :
-      "bg-yellow-500";
-
-    createEventMutation.mutate({
-      title: newEvent.title,
-      start_date: newEvent.date.toISOString(),
-      end_date: newEvent.isReminder ? undefined : newEvent.endDate.toISOString(),
-      type: newEvent.type,
-      color: eventColor,
-      is_reminder: newEvent.isReminder,
-      description: newEvent.description,
-      user_id: user.id,
-      updated_at: new Date().toISOString()
-    });
-  };
-
-  // Delete event
-  const handleDeleteEvent = (id: string) => {
-    deleteEventMutation.mutate(id);
   };
 
   // Convert Supabase events to UI format
@@ -181,8 +155,67 @@ const CalendarPage = () => {
   // Filter events for the selected date
   const filteredEvents = uiEvents.filter(event => {
     if (!date) return false;
-    return event.date.toDateString() === date.toDateString();
+    
+    const eventStart = new Date(event.date);
+    const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+    const selectedDate = new Date(date);
+    
+    // Set time to start and end of day for comparison
+    const dayStart = startOfDay(selectedDate);
+    const dayEnd = endOfDay(selectedDate);
+    
+    // Check if event falls within the selected day
+    return isWithinInterval(eventStart, { start: dayStart, end: dayEnd }) ||
+           isWithinInterval(eventEnd, { start: dayStart, end: dayEnd }) ||
+           (eventStart <= dayStart && eventEnd >= dayEnd);
   }).sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  // Add new event
+  const handleAddEvent = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    
+    if (!user) {
+      toast.error("You must be logged in to create events");
+      return;
+    }
+    
+    // Ensure dates are valid
+    const startDate = new Date(newEvent.date);
+    const endDate = new Date(newEvent.endDate);
+    
+    if (isNaN(startDate.getTime())) {
+      toast.error("Invalid start date");
+      return;
+    }
+    
+    if (!newEvent.isReminder && isNaN(endDate.getTime())) {
+      toast.error("Invalid end date");
+      return;
+    }
+    
+    const eventColor = 
+      newEvent.type === "meeting" ? "#7C3AED" : // cerebro-purple
+      newEvent.type === "task" ? "#06B6D4" : // cerebro-cyan
+      newEvent.type === "other" ? "#EF4444" : // red-500
+      "#EAB308"; // yellow-500 for reminder
+
+    createEventMutation.mutate({
+      title: newEvent.title,
+      start_date: startDate.toISOString(),
+      end_date: newEvent.isReminder ? undefined : endDate.toISOString(),
+      type: newEvent.type,
+      color: eventColor,
+      is_reminder: newEvent.isReminder,
+      description: newEvent.description,
+      user_id: user.id,
+      updated_at: new Date().toISOString()
+    });
+  };
+
+  // Delete event
+  const handleDeleteEvent = (id: string) => {
+    deleteEventMutation.mutate(id);
+  };
 
   return (
     <div className="space-y-6">
@@ -255,7 +288,7 @@ const CalendarPage = () => {
                     Create a new event or reminder for your calendar
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
+                <form onSubmit={handleAddEvent} className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="title">Title</Label>
                     <Input 
@@ -273,15 +306,15 @@ const CalendarPage = () => {
                       <Label htmlFor="type">Event Type</Label>
                       <Select 
                         defaultValue={newEvent.type} 
-                        onValueChange={(value: string) => handleTypeChange(value as "meeting" | "call" | "deadline" | "reminder")}
+                        onValueChange={(value: string) => handleTypeChange(value as "meeting" | "reminder" | "task" | "other")}
                       >
                         <SelectTrigger className="bg-gray-800/50 border-white/10">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-900 border-white/10">
                           <SelectItem value="meeting">Meeting</SelectItem>
-                          <SelectItem value="call">Call</SelectItem>
-                          <SelectItem value="deadline">Deadline</SelectItem>
+                          <SelectItem value="task">Task</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                           <SelectItem value="reminder">Reminder</SelectItem>
                         </SelectContent>
                       </Select>
@@ -337,29 +370,29 @@ const CalendarPage = () => {
                       onChange={handleInputChange}
                     />
                   </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-white/10">
-                    Cancel
-                  </Button>
-                  <Button 
-                    onClick={handleAddEvent} 
-                    className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
-                    disabled={!newEvent.title || createEventMutation.isPending}
-                  >
-                    {createEventMutation.isPending ? (
-                      <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Adding...
-                      </span>
-                    ) : (
-                      "Add Event"
-                    )}
-                  </Button>
-                </DialogFooter>
+                  <DialogFooter>
+                    <Button variant="outline" type="button" onClick={() => setIsDialogOpen(false)} className="border-white/10">
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit"
+                      className="bg-cerebro-purple hover:bg-cerebro-purple-dark"
+                      disabled={!newEvent.title || createEventMutation.isPending}
+                    >
+                      {createEventMutation.isPending ? (
+                        <span className="flex items-center">
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Adding...
+                        </span>
+                      ) : (
+                        "Add Event"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
               </DialogContent>
             </Dialog>
           </CardHeader>
@@ -412,8 +445,8 @@ const CalendarPage = () => {
                       <div className="mt-2 flex items-center gap-2">
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           event.type === 'meeting' ? 'bg-cerebro-purple/20 text-cerebro-purple' :
-                          event.type === 'call' ? 'bg-cerebro-cyan/20 text-cerebro-cyan' :
-                          event.type === 'deadline' ? 'bg-red-500/20 text-red-400' :
+                          event.type === 'task' ? 'bg-cerebro-cyan/20 text-cerebro-cyan' :
+                          event.type === 'other' ? 'bg-red-500/20 text-red-400' :
                           'bg-yellow-500/20 text-yellow-400'
                         }`}>
                           {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
