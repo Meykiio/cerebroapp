@@ -1,16 +1,15 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
-interface GeminiNoteAnalysisResponse {
+interface NoteAnalysisResponse {
   summary: string;
   suggestedTasks: string[];
 }
 
-interface GeminiContentResponse {
+interface AIContentResponse {
   text: string;
 }
 
-export const analyzeNote = async (noteContent: string): Promise<GeminiNoteAnalysisResponse> => {
+export const analyzeNote = async (noteContent: string): Promise<NoteAnalysisResponse> => {
   try {
     const { data: response, error } = await supabase.functions.invoke('analyze-note', {
       body: { content: noteContent }
@@ -18,9 +17,9 @@ export const analyzeNote = async (noteContent: string): Promise<GeminiNoteAnalys
 
     if (error) throw error;
     
-    return response as GeminiNoteAnalysisResponse;
+    return response as NoteAnalysisResponse;
   } catch (error) {
-    console.error("Error analyzing note with Gemini:", error);
+    console.error("Error analyzing note:", error);
     return {
       summary: "Unable to generate analysis at this time.",
       suggestedTasks: []
@@ -42,9 +41,9 @@ export const generateMetricInsight = async (
 
     if (error) throw error;
     
-    return (response as GeminiContentResponse).text;
+    return (response as AIContentResponse).text;
   } catch (error) {
-    console.error("Error generating metric insight with Gemini:", error);
+    console.error("Error generating metric insight:", error);
     return "Unable to generate insight at this time.";
   }
-};
+}; 

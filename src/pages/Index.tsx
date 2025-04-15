@@ -299,8 +299,8 @@ const Index = () => {
       <section className="relative pt-20 pb-32 flex flex-col items-center z-10 overflow-hidden">
         <div className="text-center max-w-3xl px-4 mx-auto">
           <TypedHeadline />
-          <p className="text-xl text-cerebro-soft/80 mb-10 max-w-2xl mx-auto animate-fade-in animation-delay-150">
-            Cerebro combines AI-driven task management, goal planning, calendar syncing, and KPI tracking—all in one powerful platform.
+          <p className="text-xl text-cerebro-soft/80 max-w-3xl mx-auto mb-8 animate-fade-in animation-delay-150">
+            Cerebro combines AI-driven task management, goal planning, and calendar syncing—all in one powerful platform.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in animation-delay-300">
             <Link to="/signup" className="w-full sm:w-auto">
@@ -320,35 +320,33 @@ const Index = () => {
       <section id="features" className="py-20 bg-gray-900/40 relative z-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-4 text-gradient animate-fade-in">
-            Powered by Gemini AI
+            Powered by Neural Intelligence
           </h2>
           <p className="text-lg text-center text-cerebro-soft/80 max-w-2xl mx-auto mb-12 animate-fade-in animation-delay-150">
-            Our AI assistant helps you manage tasks, analyze your calendar, and optimize your productivity.
+            Our advanced neural assistant helps you manage tasks, analyze your calendar, and optimize your productivity.
           </p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon={ClipboardList}
-              title="Task & Goal Manager"
-              description="Smart task management with natural language input. Break large goals into manageable subtasks with AI assistance."
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={Brain}
+              title="Smart Task Prioritization"
+              description="AI-powered task management that helps you focus on what matters most"
               iconColor="text-cerebro-purple"
               iconBgColor="bg-cerebro-purple/20"
             />
-            
-            <FeatureCard 
+            <FeatureCard
               icon={Calendar}
-              title="Smart Calendar"
-              description="Google Calendar integration with drag-and-drop scheduling. AI suggests optimal time blocks based on your productivity patterns."
+              title="Calendar Optimization"
+              description="Intelligent scheduling and calendar management to maximize your time"
               iconColor="text-cerebro-cyan"
               iconBgColor="bg-cerebro-cyan/20"
             />
-            
-            <FeatureCard 
+            <FeatureCard
               icon={StickyNote}
-              title="Idea Vault"
-              description="Capture notes and ideas with voice input. AI organizes, summarizes, and connects your thoughts to actionable tasks."
-              iconColor="text-yellow-500"
-              iconBgColor="bg-yellow-500/20"
+              title="Smart Notes"
+              description="AI-enhanced note-taking with automatic organization and insights"
+              iconColor="text-cerebro-gold"
+              iconBgColor="bg-cerebro-gold/20"
             />
           </div>
         </div>

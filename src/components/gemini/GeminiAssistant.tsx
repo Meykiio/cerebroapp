@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +23,7 @@ const GeminiAssistant: React.FC<GeminiAssistantProps> = ({ open, setOpen }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "Hi! I'm your Cerebro AI assistant. I can help you manage tasks, analyze your calendar, track KPIs, and more. I can also create tasks, notes and calendar events for you. Just tell me what you need! How can I assist you today?",
+      content: "Hi! I'm your Cerebro AI assistant. I can help you manage tasks, analyze your calendar, and create notes. I can also create tasks and calendar events for you. Just tell me what you need! How can I assist you today?",
       role: "assistant",
       timestamp: new Date(),
     },

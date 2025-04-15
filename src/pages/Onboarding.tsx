@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -130,43 +129,25 @@ const Onboarding = () => {
               <CardDescription>Choose your preferred dashboard layout</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <RadioGroup 
-                value={layoutOption} 
-                onValueChange={setLayoutOption}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2 bg-gray-800/40 p-3 rounded-lg border border-white/10 cursor-pointer hover:bg-gray-800/60">
-                  <RadioGroupItem value="balanced" id="balanced" />
-                  <Label htmlFor="balanced" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Balanced</div>
-                    <div className="text-sm text-gray-400">Equal focus on tasks, calendar, and KPIs</div>
-                  </Label>
-                </div>
-                
-                <div className="flex items-center space-x-2 bg-gray-800/40 p-3 rounded-lg border border-white/10 cursor-pointer hover:bg-gray-800/60">
-                  <RadioGroupItem value="taskFocused" id="taskFocused" />
-                  <Label htmlFor="taskFocused" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Task Focused</div>
-                    <div className="text-sm text-gray-400">Prioritize task management and goals</div>
-                  </Label>
-                </div>
-                
-                <div className="flex items-center space-x-2 bg-gray-800/40 p-3 rounded-lg border border-white/10 cursor-pointer hover:bg-gray-800/60">
-                  <RadioGroupItem value="calendarFocused" id="calendarFocused" />
-                  <Label htmlFor="calendarFocused" className="flex-1 cursor-pointer">
-                    <div className="font-medium">Calendar Focused</div>
-                    <div className="text-sm text-gray-400">Emphasize scheduling and time management</div>
-                  </Label>
-                </div>
-                
-                <div className="flex items-center space-x-2 bg-gray-800/40 p-3 rounded-lg border border-white/10 cursor-pointer hover:bg-gray-800/60">
-                  <RadioGroupItem value="kpiFocused" id="kpiFocused" />
-                  <Label htmlFor="kpiFocused" className="flex-1 cursor-pointer">
-                    <div className="font-medium">KPI Focused</div>
-                    <div className="text-sm text-gray-400">Highlight metrics and business performance</div>
-                  </Label>
-                </div>
-              </RadioGroup>
+              <div className="space-y-4">
+                <RadioGroupItem value="balanced" id="balanced" />
+                <Label htmlFor="balanced" className="flex-1 cursor-pointer">
+                  <div className="font-medium">Balanced</div>
+                  <div className="text-sm text-gray-400">Equal focus on tasks and calendar</div>
+                </Label>
+
+                <RadioGroupItem value="taskFocused" id="taskFocused" />
+                <Label htmlFor="taskFocused" className="flex-1 cursor-pointer">
+                  <div className="font-medium">Task Focused</div>
+                  <div className="text-sm text-gray-400">Prioritize task management and goal tracking</div>
+                </Label>
+
+                <RadioGroupItem value="calendarFocused" id="calendarFocused" />
+                <Label htmlFor="calendarFocused" className="flex-1 cursor-pointer">
+                  <div className="font-medium">Calendar Focused</div>
+                  <div className="text-sm text-gray-400">Emphasize calendar optimization and scheduling</div>
+                </Label>
+              </div>
             </CardContent>
             <CardFooter>
               <Button 

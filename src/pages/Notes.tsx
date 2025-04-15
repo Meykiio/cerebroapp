@@ -8,7 +8,7 @@ import { StickyNote, PlusCircle, Search, Brain, Tag, Calendar, Trash2, Mic } fro
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getNotes, createNote, deleteNote, Note } from "@/services/notesService";
-import { analyzeNote } from "@/services/geminiService";
+import { analyzeNote } from "@/services/aiService";
 import { useAuth } from "@/contexts/AuthContext";
 
 const NotesPage = () => {
