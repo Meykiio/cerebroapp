@@ -17,11 +17,6 @@ Cerebro AI is an advanced productivity platform that combines AI-driven task man
   - Automated reminders
   - Conflict detection
 
-- **📊 KPI Dashboard**
-  - Real-time metrics tracking
-  - Custom KPI visualization
-  - Performance analytics
-  - Goal progress tracking
 
 - **📝 Smart Notes**
   - AI-powered note organization
