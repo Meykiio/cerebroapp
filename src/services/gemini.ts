@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Task } from "./tasksService";
@@ -9,7 +8,7 @@ import { createNote } from "./notesService";
 import { createEvent } from "./calendarService";
 
 // Updated to use environment variables
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyAkEDnb6ZajP2O57nLMZ0-_hNgWJGWI8OQ";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
 
 export interface GeminiMessage {
@@ -38,6 +37,11 @@ export interface GeminiResponse {
   promptFeedback?: {
     blockReason?: string;
   };
+}
+
+export interface NoteAnalysisResponse {
+  summary: string;
+  suggestedTasks: string[];
 }
 
 // Function to fetch real app data from Supabase database
@@ -188,7 +192,8 @@ export const createNoteFromText = async (text: string, userId: string): Promise<
       title: noteData.title,
       content: noteData.content || "",
       tags: noteData.tags || [],
-      user_id: userId
+      user_id: userId,
+      updated_at: new Date().toISOString()
     });
     
     return note;
@@ -380,5 +385,25 @@ Based on this real user data, please respond to the following query. Always refe
     console.error("Error calling Gemini API:", error);
     toast.error("Failed to get AI response. Please try again.");
     return "I'm sorry, I couldn't process your request right now. There was an error accessing your data.";
+  }
+};
+
+// Function to analyze note content
+export const analyzeNote = async (noteContent: string): Promise<NoteAnalysisResponse> => {
+  try {
+    const response = await generateGeminiResponse([
+      {
+        role: "user",
+        parts: [{ text: `Analyze this note content and provide a summary and suggested tasks: "${noteContent}". Return a JSON with these fields: summary (string), suggestedTasks (array of strings). Only return valid JSON, no explanation.` }]
+      }
+    ]);
+    
+    return JSON.parse(response) as NoteAnalysisResponse;
+  } catch (error) {
+    console.error("Error analyzing note:", error);
+    return {
+      summary: "Unable to generate analysis at this time.",
+      suggestedTasks: []
+    };
   }
 };
