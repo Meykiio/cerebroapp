@@ -32,34 +32,23 @@ Cerebro AI is an advanced productivity platform that combines AI-driven task man
 
 ## Tech Stack
 
-- **Frontend**
-  - React 18 with TypeScript
-  - Tailwind CSS for styling
-  - Radix UI for accessible components
-  - React Query for state management
-  - Recharts for data visualization
-
-- **Backend & Infrastructure**
-  - Supabase for database and auth
-  - Gemini AI for intelligent features
-  - Netlify for hosting
-  - TypeScript for type safety
+- React with TypeScript
+- Tailwind CSS for styling
+- Supabase for backend and authentication
+- Vite for build tooling
+- React Query for data fetching
+- React Hook Form for form handling
+- React Router for navigation
+- Recharts for data visualization
+- React Hot Toast for notifications
+- React Icons for iconography
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18 or higher
-- npm or yarn
-- Supabase account
-- Gemini AI API key
-
-### Installation
-
 1. Clone the repository:
 ```bash
-git clone https://github.com/Meykiio/cerebroai-app.git
-cd cerebroai-app
+git clone https://github.com/yourusername/cerebro-ai.git
+cd cerebro-ai
 ```
 
 2. Install dependencies:
@@ -67,35 +56,29 @@ cd cerebroai-app
 npm install
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
+3. Create a `.env` file in the root directory with the following variables:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
-Edit `.env` and add your API keys:
-- VITE_SUPABASE_URL
-- VITE_SUPABASE_ANON_KEY
-- VITE_GEMINI_API_KEY
 
 4. Start the development server:
 ```bash
 npm run dev
 ```
 
-5. Build for production:
-```bash
-npm run build
-```
+## Contributing
 
-## Deployment
+We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-The app is configured for deployment on Netlify. Simply connect your GitHub repository to Netlify and it will automatically deploy when you push to the main branch.
+## License
 
-### Environment Variables for Production
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Make sure to set these environment variables in your Netlify dashboard:
-- VITE_SUPABASE_URL
-- VITE_SUPABASE_ANON_KEY
-- VITE_GEMINI_API_KEY
+## Acknowledgments
+
+- Thanks to all contributors who have helped shape this project
+- Special thanks to the open source community for the amazing tools and libraries
 
 ## About the Creator
 
@@ -118,7 +101,3 @@ Sifeddine is a 28-year-old Web Developer, AI Engineer, Designer, and Entrepreneu
 - **GitHub:** [Meykiio](https://github.com/Meykiio)
 - **Hugging Face:** [sifeddine](https://huggingface.co/sifeddine)
 - **TikTok:** [sifeddine_meb](https://tiktok.com/@sifeddine_meb)
-
-## License
-
-This project is proprietary software created by Sifeddine Mebarki. All rights reserved.
