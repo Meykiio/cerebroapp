@@ -16,7 +16,8 @@ import {
   Instagram,
   ExternalLink,
   Languages,
-  CheckCircle
+  CheckCircle,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -227,6 +228,33 @@ const DashboardCarousel = () => {
   );
 };
 
+const TestimonialCard = ({ 
+  name, 
+  role, 
+  company, 
+  testimonial
+}: { 
+  name: string; 
+  role: string; 
+  company: string; 
+  testimonial: string;
+}) => {
+  return (
+    <div className="bg-gray-800/40 backdrop-blur-sm p-6 rounded-xl border border-white/10 animate-fade-in hover:border-white/20 transition-all duration-300">
+      <div className="flex items-center gap-4">
+        <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-cerebro-purple/50 bg-cerebro-purple/20 flex items-center justify-center">
+          <User className="h-8 w-8 text-cerebro-purple" />
+        </div>
+        <div>
+          <p className="font-semibold">{name}</p>
+          <p className="text-sm text-cerebro-soft/60">{role} at {company}</p>
+        </div>
+      </div>
+      <p className="mt-4 text-cerebro-soft/90">{testimonial}</p>
+    </div>
+  );
+};
+
 const Index = () => {
   const { user } = useAuth();
   
@@ -275,15 +303,10 @@ const Index = () => {
             Cerebro combines AI-driven task management, goal planning, calendar syncing, and KPI tracking—all in one powerful platform.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in animation-delay-300">
-            <Link to="/signup">
-              <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group transition-all duration-300 w-full sm:w-auto">
+            <Link to="/signup" className="w-full sm:w-auto">
+              <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group transition-all duration-300 w-full">
                 <span>Get Started Free</span>
                 <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </Button>
-            </Link>
-            <Link to="#features">
-              <Button size="lg" variant="outline" className="border-white/20 text-cerebro-soft hover:bg-white/5 w-full sm:w-auto">
-                See Features
               </Button>
             </Link>
           </div>
@@ -303,7 +326,7 @@ const Index = () => {
             Our AI assistant helps you manage tasks, analyze your calendar, and optimize your productivity.
           </p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
               icon={ClipboardList}
               title="Task & Goal Manager"
@@ -318,14 +341,6 @@ const Index = () => {
               description="Google Calendar integration with drag-and-drop scheduling. AI suggests optimal time blocks based on your productivity patterns."
               iconColor="text-cerebro-cyan"
               iconBgColor="bg-cerebro-cyan/20"
-            />
-            
-            <FeatureCard 
-              icon={LineChart}
-              title="KPI Tracker"
-              description="Track business metrics that matter. Visualize trends and get AI insights on your performance indicators."
-              iconColor="text-green-500"
-              iconBgColor="bg-green-500/20"
             />
             
             <FeatureCard 
@@ -506,36 +521,27 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-gradient animate-fade-in">What Our Users Say</h2>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                quote: "Cerebro has completely transformed how I manage my day-to-day tasks. The AI suggestions are eerily accurate!",
-                author: "Sarah K.",
-                role: "Startup Founder"
-              },
-              {
-                quote: "I've tried dozens of productivity tools, but Cerebro is the first one that actually adapts to how I work instead of the other way around.",
-                author: "Michael T.",
-                role: "Project Manager"
-              },
-              {
-                quote: "The KPI tracking feature has given me insights into my business I never knew I needed. Game changer for my decision making.",
-                author: "Alexa R.",
-                role: "E-commerce Entrepreneur"
-              }
-            ].map((testimonial, i) => (
-              <div 
-                key={i} 
-                className="bg-gray-800/40 backdrop-blur-sm p-6 rounded-xl border border-white/10 animate-fade-in hover:border-white/20 transition-all duration-300"
-                style={{ animationDelay: `${i * 150}ms` }}
-              >
-                <p className="italic text-cerebro-soft/90 mb-4">"{testimonial.quote}"</p>
-                <div>
-                  <p className="font-semibold">{testimonial.author}</p>
-                  <p className="text-sm text-cerebro-soft/60">{testimonial.role}</p>
-                </div>
-              </div>
-            ))}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TestimonialCard
+              name="Karim Benali"
+              role="Startup Founder"
+              company="TechMag"
+              testimonial="Cerebro AI has transformed how I manage my startup. The AI-powered task management and smart calendar features help me stay focused on what matters most."
+            />
+            
+            <TestimonialCard
+              name="Amira Meziane"
+              role="Digital Marketing Manager"
+              company="AlgérieCom"
+              testimonial="The idea vault feature is a game-changer. I can quickly capture ideas during meetings and the AI helps me turn them into actionable tasks. Highly recommended!"
+            />
+            
+            <TestimonialCard
+              name="Youcef Hamidi"
+              role="Freelance Developer"
+              company="CodeCraft"
+              testimonial="As a freelancer, managing multiple projects was always challenging. Cerebro AI's intuitive interface and AI capabilities have boosted my productivity significantly."
+            />
           </div>
         </div>
       </section>
@@ -547,16 +553,11 @@ const Index = () => {
           <p className="text-xl text-cerebro-soft/80 mb-8 max-w-2xl mx-auto animate-fade-in animation-delay-150">
             Join thousands of entrepreneurs and founders who use Cerebro to achieve more with less effort.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex justify-center">
             <Link to="/signup">
               <Button size="lg" className="bg-cerebro-purple hover:bg-cerebro-purple-dark group animate-fade-in animation-delay-300 w-full sm:w-auto">
                 Start Free Trial 
                 <ChevronRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </Button>
-            </Link>
-            <Link to="#features">
-              <Button size="lg" variant="outline" className="border-white/20 text-cerebro-soft hover:bg-white/5 animate-fade-in animation-delay-400 w-full sm:w-auto">
-                Explore Features
               </Button>
             </Link>
           </div>

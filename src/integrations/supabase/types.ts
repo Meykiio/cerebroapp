@@ -174,6 +174,43 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          created_at: string
+          read: boolean
+          type: 'info' | 'success' | 'warning' | 'error'
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          created_at?: string
+          read?: boolean
+          type: 'info' | 'success' | 'warning' | 'error'
+          user_id: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          created_at?: string
+          read?: boolean
+          type?: 'info' | 'success' | 'warning' | 'error'
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

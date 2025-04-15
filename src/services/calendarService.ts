@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import Logger from "./loggingService";
+import { Database } from "@/integrations/supabase/types";
 
 const logger = Logger.getInstance('calendar');
 
@@ -18,19 +19,7 @@ export class CalendarOperationError extends Error {
   }
 }
 
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  description?: string;
-  start_date: string;
-  end_date?: string;
-  type: 'meeting' | 'task' | 'reminder' | 'other';
-  color: string;
-  is_reminder: boolean;
-  created_at: string;
-  user_id: string;
-  updated_at: string;
-}
+export type CalendarEvent = Database['public']['Tables']['calendar_events']['Row'];
 
 // Validation functions
 const validateEventInput = (event: Partial<CalendarEvent>) => {

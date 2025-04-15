@@ -1,17 +1,16 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, BellDot, BellRing, Check } from "lucide-react";
 import { toast } from "sonner";
-
-interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  date: Date;
-  read: boolean;
-  type: "info" | "success" | "warning" | "error";
-}
+import { useAuth } from "@/contexts/AuthContext";
+import { 
+  fetchNotifications, 
+  markNotificationAsRead, 
+  markAllNotificationsAsRead, 
+  deleteNotification,
+  type Notification 
+} from "@/services/notificationService";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NotificationsDropdownProps {
   className?: string;
@@ -19,49 +18,71 @@ interface NotificationsDropdownProps {
 
 const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { user } = useAuth();
   
-  // Sample notifications - in a real app, these would come from a global state or API
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      title: "New Feature Available",
-      description: "Try out our new Calendar integration with Google Calendar",
-      date: new Date("2025-04-09T10:30:00"),
-      read: false,
-      type: "info"
-    },
-    {
-      id: "2",
-      title: "Weekly Report Ready",
-      description: "Your KPI summary for the week is now available",
-      date: new Date("2025-04-08T16:45:00"),
-      read: false,
-      type: "success"
-    },
-    {
-      id: "3",
-      title: "Upcoming Deadline",
-      description: "Project proposal due tomorrow at 5 PM",
-      date: new Date("2025-04-08T09:15:00"),
-      read: true,
-      type: "warning"
-    }
-  ]);
+  // Fetch notifications on mount and when user changes
+  useEffect(() => {
+    if (user) {
+      loadNotifications();
+      
+      // Subscribe to real-time notifications
+      const channel = supabase
+        .channel('notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            loadNotifications();
+          }
+        )
+        .subscribe();
 
-  const markAllNotificationsAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    toast.success("All notifications marked as read");
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
+
+  const loadNotifications = async () => {
+    if (user) {
+      const data = await fetchNotifications(user.id);
+      setNotifications(data);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (user) {
+      const success = await markAllNotificationsAsRead(user.id);
+      if (success) {
+        await loadNotifications();
+        toast.success("All notifications marked as read");
+      }
+    }
   };
   
-  const markNotificationAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+  const handleMarkAsRead = async (id: string) => {
+    if (user) {
+      const success = await markNotificationAsRead(id, user.id);
+      if (success) {
+        await loadNotifications();
+      }
+    }
   };
   
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-    toast.success("Notification deleted");
+  const handleDelete = async (id: string) => {
+    if (user) {
+      const success = await deleteNotification(id, user.id);
+      if (success) {
+        await loadNotifications();
+        toast.success("Notification deleted");
+      }
+    }
   };
   
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -82,21 +103,23 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
         )}
       </Button>
       
-      {/* Notifications dropdown */}
       {showNotifications && (
         <div className="absolute right-0 mt-2 w-80 bg-gray-900 border border-white/10 rounded-md shadow-lg z-50">
           <div className="p-3 border-b border-white/10 flex items-center justify-between">
             <h3 className="font-medium">Notifications</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={markAllNotificationsAsRead}
-              className="h-7 text-xs"
-            >
-              Mark all as read
-            </Button>
+            {notifications.length > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleMarkAllAsRead}
+                className="h-7 text-xs"
+              >
+                Mark all as read
+              </Button>
+            )}
           </div>
-          <div className="max-h-80 overflow-y-auto">
+          
+          <div className="max-h-[400px] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-4 text-center text-cerebro-soft/50">
                 <p>No notifications</p>
@@ -106,7 +129,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
                 <div 
                   key={notification.id}
                   className={`p-3 border-b border-white/5 hover:bg-white/5 ${notification.read ? 'opacity-70' : ''}`}
-                  onClick={() => markNotificationAsRead(notification.id)}
+                  onClick={() => handleMarkAsRead(notification.id)}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`mt-1 p-1 rounded-full ${
@@ -128,7 +151,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
                         {notification.description}
                       </p>
                       <p className="text-xs text-cerebro-soft/50 mt-1">
-                        {notification.date.toLocaleString('default', { 
+                        {new Date(notification.created_at).toLocaleString('default', { 
                           month: 'short', 
                           day: 'numeric', 
                           hour: '2-digit', 
@@ -142,7 +165,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
                       className="h-6 w-6 hover:text-red-400 hover:bg-transparent"
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteNotification(notification.id);
+                        handleDelete(notification.id);
                       }}
                     >
                       &times;
@@ -152,11 +175,14 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ className
               ))
             )}
           </div>
-          <div className="p-2 border-t border-white/10">
-            <Button variant="link" className="w-full text-center text-cerebro-purple text-sm">
-              View all notifications
-            </Button>
-          </div>
+          
+          {notifications.length > 0 && (
+            <div className="p-2 border-t border-white/10">
+              <Button variant="link" className="w-full text-center text-cerebro-purple text-sm">
+                View all notifications
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>
